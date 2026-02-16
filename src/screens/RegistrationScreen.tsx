@@ -1,14 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { checkDateGreaterThanToday, checkEmailValidity, getFormatedDateLocalTimeZone } from '../utils/ProjectUtils';
+import AppHeading from '../components/AppHeading';
 import PhoneInput from 'react-native-phone-number-input';
 import CustomDataInput from '../components/CustomDataInput';
 import CustomDatePicker from '../components/CustomDatePicker';
-import Icon from 'react-native-vector-icons/Feather';
 import ContactInput from '../components/ContactInput';
 import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
@@ -18,7 +16,6 @@ import { RootStackParamList } from '../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
 const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.Element => {
-    const insets = useSafeAreaInsets();
     const { width, height, isPortrait } = useIsPortrait();
 
     const phoneInputRef = useRef<PhoneInput>(null);
@@ -78,14 +75,9 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
 
     return (
         <>
-            <LinearGradient
-                style={[(isPortrait ? styles.headingContainerPortrait : styles.headingContainerLandscape), { paddingTop: insets.top }]}
-                colors={['#0061ff', '#60efff']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            >
-                <Text style={styles.headingText}>Welcome to App</Text>
-            </LinearGradient>
+            <AppHeading
+                isPortrait={isPortrait}
+                headingMessage='Welcome to App'/>
 
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
                 <KeyboardAwareScrollView

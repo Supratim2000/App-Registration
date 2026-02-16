@@ -7,6 +7,11 @@ export type CheckDateGreaterThanTodayReturnType = {
   formattedDate: string
 }
 
+export type HeadingProp = {
+    isPortrait: boolean,
+    headingMessage: string
+}
+
 export type InputProps = {
     heading: string,
     inputType?: KeyboardTypeOptions,

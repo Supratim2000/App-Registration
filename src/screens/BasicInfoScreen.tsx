@@ -4,15 +4,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../navigation/types';
 import useIsPortrait from '../hooks/useIsPortrait';
-import LinearGradient from 'react-native-linear-gradient';
 import DataViewer from '../components/DataViewer';
+import AppHeading from '../components/AppHeading';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BasicInfo'>;
 
 const BasicInfoScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.Element => {
     const { firstName, lastName, address, contact, email, dob } = route.params;
     const { width, height, isPortrait } = useIsPortrait();
-    const insets = useSafeAreaInsets();
     const [isSubmited, setIsSubmited] = useState<boolean>(false);
     
     const handleFormSubmit = (): void =>{
@@ -21,14 +20,9 @@ const BasicInfoScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.El
 
     return (
         <>
-            <LinearGradient
-                style={[(isPortrait ? styles.headingContainerPortrait : styles.headingContainerLandscape), { paddingTop: insets.top }]}
-                colors={['#0061ff', '#60efff']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            >
-                <Text style={styles.headingText}>Welcome to App</Text>
-            </LinearGradient>
+            <AppHeading
+                isPortrait={isPortrait}
+                headingMessage='Welcome to App'/>
 
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
                 <ScrollView contentContainerStyle={{ padding: 8 }}>
