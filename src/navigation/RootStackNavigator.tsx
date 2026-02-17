@@ -12,7 +12,8 @@ const RootStackNavigator : React.FC = () : React.JSX.Element => {
         <Stack.Navigator
         initialRouteName='Registration'
             screenOptions={{
-                headerShown: false
+                headerShown: false,
+                animation: 'slide_from_right'
             }}
         >
             <Stack.Screen name='Registration' component={RegistrationScreen}/>

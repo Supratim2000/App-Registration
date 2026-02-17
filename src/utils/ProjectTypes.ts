@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
-import { KeyboardTypeOptions } from "react-native"
+import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native"
 import PhoneInput from "react-native-phone-number-input"
 
 export type CheckDateGreaterThanTodayReturnType = {
@@ -21,7 +21,24 @@ export type InputProps = {
     errorSetter?: Dispatch<SetStateAction<boolean>>,
     errorPrompt?: string,
     inputData: string,
-    setInputData: Dispatch<SetStateAction<string>>
+    setInputData: Dispatch<SetStateAction<string>>,
+    containerStyle?: StyleProp<ViewStyle>
+}
+
+export type StateObjectType = {
+    label: string,
+    value: string
+}
+
+export type StateSelectorProps = {
+    heading: string,
+    listData: StateObjectType[],
+    isMandatory?: boolean,
+    isError?: boolean,
+    errorSetter?: Dispatch<SetStateAction<boolean>>,
+    errorPrompt?: string,
+    inputState: string | null,
+    setInputState: Dispatch<SetStateAction<string | null>>
 }
 
 export type DataProps = {
@@ -300,5 +317,6 @@ export type ContactProps = {
     contactCodeValue: string,
     textChangeHandler: Dispatch<SetStateAction<string>>,
     textChangeFormattedHandler: Dispatch<SetStateAction<string>>,
-    autoFocus?: boolean
+    autoFocus?: boolean,
+    containerStyle?: StyleProp<ViewStyle>
 }

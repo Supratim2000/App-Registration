@@ -12,7 +12,8 @@ const CustomDataInput: React.FC<InputProps> = ({
     errorSetter = () => {},
     errorPrompt = '',
     inputData,
-    setInputData
+    setInputData,
+    containerStyle
 }): React.JSX.Element => {
 
     const handleTextChanges = (text: string): void => {
@@ -26,7 +27,7 @@ const CustomDataInput: React.FC<InputProps> = ({
     };
 
     return (
-        <View style={styles.fieldInputContainer}>
+        <View style={[styles.fieldInputContainer, containerStyle]}>
             <Text style={styles.nameHeading}>{ heading }</Text>
             { infoType === 'address'? 
             <TextInput
@@ -52,7 +53,6 @@ const CustomDataInput: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
     fieldInputContainer: {
-
     },
     nameHeading: {
         color: '#000000',
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         fontFamily: 'PTSerif-Regular'
     },
     basicTextInputStyle: {
-        height: 44,
+        height: 48,
         borderWidth: 1,
         borderRadius: 4,
         paddingHorizontal: 15,

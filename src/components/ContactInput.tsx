@@ -15,7 +15,8 @@ const ContactInput: React.FC<ContactProps> = ({
     contactCodeValue,
     textChangeHandler,
     textChangeFormattedHandler,
-    autoFocus = false
+    autoFocus = false,
+    containerStyle
 }): React.JSX.Element => {
     useEffect(() => {
         const checkIfValidContactNumber = contactRef.current?.isValidNumber(defaultValue);
@@ -27,7 +28,7 @@ const ContactInput: React.FC<ContactProps> = ({
     }, [defaultValue, contactCodeValue]);
 
     return (
-        <View style={styles.fieldInputContainer}>
+        <View style={[styles.fieldInputContainer, containerStyle]}>
             <Text style={styles.nameHeading}>{ heading }</Text>
             
             <PhoneInput

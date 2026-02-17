@@ -1,21 +1,25 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkDateGreaterThanToday, checkEmailValidity, getFormatedDateLocalTimeZone } from '../utils/ProjectUtils';
 import AppHeading from '../components/AppHeading';
 import PhoneInput from 'react-native-phone-number-input';
 import CustomDataInput from '../components/CustomDataInput';
 import CustomDatePicker from '../components/CustomDatePicker';
 import ContactInput from '../components/ContactInput';
+import StateSelector from '../components/StateSelector';
 import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
+import { Dropdown } from 'react-native-element-dropdown';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
 const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.Element => {
+    const insets = useSafeAreaInsets();
     const { width, height, isPortrait } = useIsPortrait();
 
     const phoneInputRef = useRef<PhoneInput>(null);
@@ -39,12 +43,16 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
     const [isDobGreaterThanCurrent, setDobGreaterThanCurrent] = useState<boolean>(false);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
 
+    const [selectedState, setSelectedState] = useState<string | null>(null);
+    const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
+
     const isSignUpButtonDisabled = useEnable([
         firstNameErrorPresent,
         addressErrorPresent,
         contactErrorPresent,
         emailErrorPresent,
-        isDobGreaterThanCurrent
+        isDobGreaterThanCurrent,
+        isStateSelectorError
     ]);
 
     const handleDatePickCancel = () : void => {
@@ -82,11 +90,12 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
                 <KeyboardAwareScrollView
                     enableOnAndroid
-                    extraScrollHeight={10}
-                    keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
+                    extraScrollHeight={40}
+                    keyboardShouldPersistTaps='handled'
+                    showsVerticalScrollIndicator={true}
+                    enableAutomaticScroll={true}
                     contentContainerStyle={{
-                        paddingBottom: 10,
+                        paddingBottom: insets.bottom + 20,
                         flexGrow: 1
                     }}
                 >
@@ -124,32 +133,37 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
                             setInputData={setAddressInputValue}
                         />
 
-                        <ContactInput
-                            heading='Phone'
-                            isMandatory={true}
-                            isError={contactErrorPresent}
-                            errorSetter={setContactErrorPresent}
-                            errorPrompt="Contact details isn't valid"
-                            contactRef={phoneInputRef}
-                            defaultValue={contactInputValue}
-                            defaultCode='IN'
-                            contactCodeValue={contactCodeValue}
-                            textChangeHandler={setContactInputValue}
-                            textChangeFormattedHandler={setContactCodeValue}
-                        />
+                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                            <ContactInput
+                                heading='Phone'
+                                isMandatory={true}
+                                isError={contactErrorPresent}
+                                errorSetter={setContactErrorPresent}
+                                errorPrompt="Contact details isn't valid"
+                                contactRef={phoneInputRef}
+                                defaultValue={contactInputValue}
+                                defaultCode='IN'
+                                contactCodeValue={contactCodeValue}
+                                textChangeHandler={setContactInputValue}
+                                textChangeFormattedHandler={setContactCodeValue}
+                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%'}}
+                            />
 
-                        <CustomDataInput
-                            heading='Email'
-                            infoType='email'
-                            inputType='email-address'
-                            isMandatory={true}
-                            isError={emailErrorPresent}
-                            errorSetter={setEmailErrorPresent}
-                            errorPrompt='Entered email is invalid'
-                            inputData={emailInputValue}
-                            setInputData={setEmailInputValue}
-                        />
-                                
+                            <CustomDataInput
+                                heading='Email'
+                                infoType='email'
+                                inputType='email-address'
+                                isMandatory={true}
+                                isError={emailErrorPresent}
+                                errorSetter={setEmailErrorPresent}
+                                errorPrompt='Entered email is invalid'
+                                inputData={emailInputValue}
+                                setInputData={setEmailInputValue}
+                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%' }}
+                            />
+                        </View>
+                        
+ 
                         <CustomDatePicker
                             selectedDate={selectedDate}
                             isError={isDobGreaterThanCurrent}
@@ -159,6 +173,16 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
                             confirmHandler={handleSelectedDate}
                             cancelHandler={handleDatePickCancel}
                         />
+
+                        <StateSelector
+                            heading='State'
+                            listData={STATE_DATA}
+                            isMandatory={true}
+                            isError={isStateSelectorError}
+                            errorSetter={setIsStateSelectorError}
+                            errorPrompt='Select a valid state'
+                            inputState={selectedState}
+                            setInputState={setSelectedState} />
 
                         <View style={styles.marginEffect}></View>
                         <View style={styles.marginEffect}></View>
@@ -239,6 +263,35 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 20
     },
+    portraitContactInfoContainer: {
+        flexDirection: 'column',
+    },
+    landscapeContactInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    dropdown: {
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 10,
+    },
+    stateSelectorModal: {
+        borderRadius: 20,
+        padding: 12,
+        backgroundColor: '#ffffff',
+    },
+    individualState: {
+        backgroundColor: '#ffffff',
+        borderColor: '#ededed',
+        borderBottomWidth: 1
+    },
+    stateText: {
+        fontFamily: 'PTSerif-Regular',
+        fontSize: 16
+    },
+    stateSearchInput: {
+    }
 });
 
 export default RegistrationScreen;

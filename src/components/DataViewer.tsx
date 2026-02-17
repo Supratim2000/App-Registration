@@ -7,7 +7,7 @@ const DataViewer: React.FC<DataProps> = ({ heading, content }): React.JSX.Elemen
         <View style={styles.infoContainer}>
             <Text style={styles.dataText}>{heading}: </Text>
             <Text style={[styles.dataText, styles.fadeColorText]}>{ content }</Text>
-            </View>
+        </View>
         );
 }
 
