@@ -12,6 +12,7 @@ const CustomDatePicker: React.FC<DateProps> = ({
     confirmHandler,
     cancelHandler
 }): React.JSX.Element => {
+    console.log(isError);
     return (
         <View style={styles.fieldInputContainer}>
             <Text style={styles.nameHeading}>DOB</Text>

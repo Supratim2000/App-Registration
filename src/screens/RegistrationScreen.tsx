@@ -18,7 +18,7 @@ import RadioSelector from '../components/RadioSelector';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
-const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.Element => {
+const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.Element => {
     const insets = useSafeAreaInsets();
     const { width, height, isPortrait } = useIsPortrait();
 
@@ -38,9 +38,9 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
     const [emailErrorPresent, setEmailErrorPresent] = useState<boolean>(true);
     const [emailInputValue, setEmailInputValue] = useState<string>('');
     
-    const [selectedDate, setSelectedDate] = useState<string>(getFormatedDateLocalTimeZone(new Date()));
-    const [contactCodeValue, setContactCodeValue] = useState<string>("");
-    const [isDobGreaterThanCurrent, setDobGreaterThanCurrent] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [contactCodeValue, setContactCodeValue] = useState<string>('');
+    const [isDateErrorPresent, setIsDateErrorPresent] = useState<boolean>(true);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
 
     const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -53,7 +53,7 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
         addressErrorPresent,
         contactErrorPresent,
         emailErrorPresent,
-        isDobGreaterThanCurrent,
+        isDateErrorPresent,
         isStateSelectorError,
         selectedGender === null
     ]);
@@ -64,8 +64,8 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
 
     const handleSelectedDate = (date: Date) : void => {
         const { isGreater, formattedDate } = checkDateGreaterThanToday(date);
-        setDobGreaterThanCurrent(isGreater);
-        setSelectedDate(formattedDate);
+        setIsDateErrorPresent(isGreater);
+        isGreater ? setSelectedDate('') : setSelectedDate(formattedDate);
         setIsDatePickerVisible(false);
     };
 
@@ -171,8 +171,8 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
  
                         <CustomDatePicker
                             selectedDate={selectedDate}
-                            isError={isDobGreaterThanCurrent}
-                            errorPrompt="Date of birth can't be more than today"
+                            isError={isDateErrorPresent}
+                            errorPrompt="Please selecte a valid date"
                             datePickerHandler={showDatePickerHandler}
                             pickerVisible={isDatePickerVisible}
                             confirmHandler={handleSelectedDate}
