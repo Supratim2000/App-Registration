@@ -13,8 +13,8 @@ import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
-import { Dropdown } from 'react-native-element-dropdown';
+import { GENDER_SELECTOR_OPTIONS, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
+import RadioSelector from '../components/RadioSelector';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
@@ -46,13 +46,16 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
     const [selectedState, setSelectedState] = useState<string | null>(null);
     const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
 
+    const [selectedGender, setSelectedGender] = useState<string | null>(null);
+
     const isSignUpButtonDisabled = useEnable([
         firstNameErrorPresent,
         addressErrorPresent,
         contactErrorPresent,
         emailErrorPresent,
         isDobGreaterThanCurrent,
-        isStateSelectorError
+        isStateSelectorError,
+        selectedGender === null
     ]);
 
     const handleDatePickCancel = () : void => {
@@ -77,7 +80,9 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
             address: addressInputValue.trim(),
             contact: contactCodeValue.trim(),
             email: emailInputValue.trim(),
-            dob: selectedDate
+            dob: selectedDate,
+            state: selectedState ?? '',
+            gender: selectedGender ?? ''
         });
     };
 
@@ -184,7 +189,14 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
                             inputState={selectedState}
                             setInputState={setSelectedState} />
 
-                        <View style={styles.marginEffect}></View>
+                        <RadioSelector
+                            heading='Select Gender'
+                            selectorData={GENDER_SELECTOR_OPTIONS}
+                            selected={selectedGender}
+                            setSelected={setSelectedGender}
+                            isPortrait={isPortrait}
+                            errorPrompt='Please select one gender'/>
+
                         <View style={styles.marginEffect}></View>
                             
                         <TouchableOpacity

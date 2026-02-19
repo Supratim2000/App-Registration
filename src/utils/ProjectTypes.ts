@@ -56,6 +56,25 @@ export type DateProps = {
     cancelHandler: () => void
 }
 
+export type SelectorType = {
+    key: string,
+    value: string
+}
+
+export type StateType = {
+    label: string,
+    value: string
+}
+
+export type GenderSelectorProp = {
+    heading: string,
+    selectorData: SelectorType[],
+    selected: string | null,
+    setSelected: Dispatch<SetStateAction<string | null>>,
+    isPortrait: boolean,
+    errorPrompt: string
+}
+
 export type ContactProps = {
     heading: string,
     isMandatory?: boolean,
