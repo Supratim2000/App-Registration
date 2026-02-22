@@ -10,28 +10,31 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AppSplash'>;
 
 const AppSplashScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element => {
     const dispatch = useDispatch<AppDispatch>();
-    const { firstName, isInitialized } = useSelector((state: RootState) => state.registration );
+    const { firstName, loading, error } = useSelector((state: RootState) => state.registration );
 
     useEffect(() => {
         dispatch(retriveRegistrationDataFromAsyncStorage());
     }, []);
 
     useEffect(() => {
-        if(isInitialized) {
-            if(firstName === '') {
-                navigation.replace('Registration');
-            } else {
-                navigation.replace('BottomTab');
-            }
+        if(!loading && !error) {
+            firstName === '' ? navigation.replace('Registration') : navigation.replace('BottomTab');
         }
-    },[firstName, isInitialized]);
+    },[loading]);
 
     return (
         <View style={styles.loadingContainer}>
-            <View style={styles.loadingSubContainer}>
-                <Text style={styles.splashHeading}>Checking registration data</Text>
-                <ActivityIndicator size={80} color="#1778F2" />
-            </View>
+            {
+                error?
+                    <View style={styles.errorSubContainer}>
+                        <Text style={styles.errorHeading}>Failed to fetch user data!</Text>
+                    </View>
+                    :
+                    <View style={styles.loadingSubContainer}>
+                        <Text style={styles.splashHeading}>Checking registration data...</Text>
+                        <ActivityIndicator size={80} color="#1778F2" />
+                    </View>
+            }
         </View>
     );
 }
@@ -43,10 +46,23 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     loadingSubContainer: {
-        borderColor: '#c1c1c1',
-        borderWidth: 1,
-        padding: 8,
-        borderRadius: 16
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        padding: 16,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 8
+    },
+    errorSubContainer: {
+        borderColor: '#ff3333',
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        padding: 16,
+        elevation: 4,
+        shadowColor: '#ff3333',
+        shadowOpacity: 0.1,
+        shadowRadius: 8
     },
     splashHeading: {
         fontFamily: 'CrimsonText-Bold',
@@ -54,6 +70,12 @@ const styles = StyleSheet.create({
         fontSize: 28,
         textAlign: 'center'
     },
+    errorHeading: {
+        fontFamily: 'CrimsonText-Bold',
+        color: '#ff3333',
+        fontSize: 28,
+        textAlign: 'center'
+    }
 })
 
 export default AppSplashScreen;

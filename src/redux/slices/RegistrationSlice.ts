@@ -13,9 +13,8 @@ const initialState: RegistrationStoreType = {
     dob: '',
     state: '',
     gender: '',
-    loading: false,
-    error: null,
-    isInitialized: false,
+    loading: true,
+    error: null
 };
 
 export const saveRegistrationDataIntoAsyncStorage = createAsyncThunk<void, UserDataType>(
@@ -67,14 +66,13 @@ const RegistrationSlice = createSlice({
                 state.error = null;
             })
             .addCase(retriveRegistrationDataFromAsyncStorage.fulfilled, (state, action) => {
-                state.isInitialized = true;
                 state.loading = false;
+                state.error = null;
                 if (action.payload) {
                     Object.assign(state, action.payload);
                 }
             })
             .addCase(retriveRegistrationDataFromAsyncStorage.rejected, (state, action) => {
-                state.isInitialized = true;
                 state.loading = false;
                 state.error = action.error.message || 'Loading registration data failed from async storage';
             })
