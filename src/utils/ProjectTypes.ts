@@ -1,6 +1,8 @@
 import { Dispatch, SetStateAction } from "react"
 import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native"
 import PhoneInput from "react-native-phone-number-input"
+import { TextStyle } from "react-native"
+import { FieldType, GenderValue } from "./ProjectConstants"
 
 export type CheckDateGreaterThanTodayReturnType = {
   isGreater: boolean,
@@ -48,6 +50,7 @@ export type DataProps = {
 
 export type DateProps = {
     selectedDate: string,
+    disableFutureDates?: boolean,
     isError: boolean,
     errorPrompt: string
     datePickerHandler: () => void,
@@ -58,7 +61,7 @@ export type DateProps = {
 
 export type SelectorType = {
     key: string,
-    value: string
+    value: GenderValue
 }
 
 export type StateType = {
@@ -69,10 +72,22 @@ export type StateType = {
 export type GenderSelectorProp = {
     heading: string,
     selectorData: SelectorType[],
-    selected: string | null,
-    setSelected: Dispatch<SetStateAction<string | null>>,
+    selected: GenderValue | null,
+    setSelected: Dispatch<SetStateAction<GenderValue | null>>,
     isPortrait: boolean,
     errorPrompt: string
+}
+
+export type CustomButtonProp = {
+    isDisabled?: boolean,
+    showLoadingIndicator?: boolean,
+    buttonText: string,
+    pressHandler: () => void,
+    buttonStyle?: StyleProp<ViewStyle>,
+    enableStyle?: StyleProp<ViewStyle>,
+    disableStyle?: StyleProp<ViewStyle>,
+    textStyle?: StyleProp<TextStyle>,
+    extraStyle?: StyleProp<ViewStyle>
 }
 
 export type ContactProps = {
@@ -83,259 +98,57 @@ export type ContactProps = {
     errorPrompt?: string,
     contactRef: React.RefObject<PhoneInput | null>,
     defaultValue: string,
-    defaultCode: | "AF"
-    | "AL"
-    | "DZ"
-    | "AS"
-    | "AD"
-    | "AO"
-    | "AI"
-    | "AQ"
-    | "AG"
-    | "AR"
-    | "AM"
-    | "AW"
-    | "AU"
-    | "AT"
-    | "AZ"
-    | "BS"
-    | "BH"
-    | "BD"
-    | "BB"
-    | "BY"
-    | "BE"
-    | "BZ"
-    | "BJ"
-    | "BM"
-    | "BT"
-    | "BO"
-    | "BA"
-    | "BW"
-    | "BV"
-    | "BR"
-    | "IO"
-    | "VG"
-    | "BN"
-    | "BG"
-    | "BF"
-    | "BI"
-    | "KH"
-    | "CM"
-    | "CA"
-    | "CV"
-    | "BQ"
-    | "KY"
-    | "CF"
-    | "TD"
-    | "CL"
-    | "CN"
-    | "CX"
-    | "CC"
-    | "CO"
-    | "KM"
-    | "CK"
-    | "CR"
-    | "HR"
-    | "CU"
-    | "CW"
-    | "CY"
-    | "CZ"
-    | "CD"
-    | "DK"
-    | "DJ"
-    | "DM"
-    | "DO"
-    | "EC"
-    | "EG"
-    | "SV"
-    | "GQ"
-    | "ER"
-    | "EE"
-    | "SZ"
-    | "ET"
-    | "FK"
-    | "FO"
-    | "FJ"
-    | "FI"
-    | "FR"
-    | "GF"
-    | "PF"
-    | "TF"
-    | "GA"
-    | "GM"
-    | "GE"
-    | "DE"
-    | "GH"
-    | "GI"
-    | "GR"
-    | "GL"
-    | "GD"
-    | "GP"
-    | "GU"
-    | "GT"
-    | "GG"
-    | "GN"
-    | "GW"
-    | "GY"
-    | "HT"
-    | "HM"
-    | "HN"
-    | "HU"
-    | "IS"
-    | "IN"
-    | "ID"
-    | "IR"
-    | "IQ"
-    | "IE"
-    | "IM"
-    | "IL"
-    | "IT"
-    | "CI"
-    | "JM"
-    | "JP"
-    | "JE"
-    | "JO"
-    | "KZ"
-    | "KE"
-    | "XK"
-    | "KW"
-    | "KG"
-    | "LA"
-    | "LV"
-    | "LB"
-    | "LS"
-    | "LR"
-    | "LY"
-    | "LI"
-    | "LT"
-    | "LU"
-    | "MO"
-    | "MK"
-    | "MG"
-    | "MW"
-    | "MY"
-    | "MV"
-    | "ML"
-    | "MT"
-    | "MH"
-    | "MQ"
-    | "MR"
-    | "MU"
-    | "YT"
-    | "MX"
-    | "FM"
-    | "MD"
-    | "MC"
-    | "MN"
-    | "ME"
-    | "MS"
-    | "MA"
-    | "MZ"
-    | "MM"
-    | "NA"
-    | "NR"
-    | "NP"
-    | "NL"
-    | "NC"
-    | "NZ"
-    | "NI"
-    | "NE"
-    | "NG"
-    | "NU"
-    | "NF"
-    | "KP"
-    | "MP"
-    | "NO"
-    | "OM"
-    | "PK"
-    | "PW"
-    | "PS"
-    | "PA"
-    | "PG"
-    | "PY"
-    | "PE"
-    | "PH"
-    | "PN"
-    | "PL"
-    | "PT"
-    | "PR"
-    | "QA"
-    | "CG"
-    | "RO"
-    | "RU"
-    | "RW"
-    | "RE"
-    | "BL"
-    | "SH"
-    | "KN"
-    | "LC"
-    | "MF"
-    | "PM"
-    | "VC"
-    | "WS"
-    | "SM"
-    | "SA"
-    | "SN"
-    | "RS"
-    | "SC"
-    | "SL"
-    | "SG"
-    | "SX"
-    | "SK"
-    | "SI"
-    | "SB"
-    | "SO"
-    | "ZA"
-    | "GS"
-    | "KR"
-    | "SS"
-    | "ES"
-    | "LK"
-    | "SD"
-    | "SR"
-    | "SJ"
-    | "SE"
-    | "CH"
-    | "SY"
-    | "ST"
-    | "TW"
-    | "TJ"
-    | "TZ"
-    | "TH"
-    | "TL"
-    | "TG"
-    | "TK"
-    | "TO"
-    | "TT"
-    | "TN"
-    | "TR"
-    | "TM"
-    | "TC"
-    | "TV"
-    | "UG"
-    | "UA"
-    | "AE"
-    | "GB"
-    | "US"
-    | "UM"
-    | "VI"
-    | "UY"
-    | "UZ"
-    | "VU"
-    | "VA"
-    | "VE"
-    | "VN"
-    | "WF"
-    | "EH"
-    | "YE"
-    | "ZM"
-    | "ZW"
-    | "KI"
-    | "HK"
-    | "AX",
+    defaultCode: React.ComponentProps<typeof PhoneInput>["defaultCode"];
     contactCodeValue: string,
     textChangeHandler: Dispatch<SetStateAction<string>>,
     textChangeFormattedHandler: Dispatch<SetStateAction<string>>,
     autoFocus?: boolean,
     containerStyle?: StyleProp<ViewStyle>
 }
+
+type BaseFieldProps = {
+  heading: string;
+  isMandatory?: boolean;
+  isError?: boolean;
+  errorPrompt?: string;
+  containerStyle?: StyleProp<ViewStyle>;
+};
+
+type TextFieldProps = BaseFieldProps & {
+  type: FieldType.TEXT | FieldType.EMAIL;
+  value: string;
+  onChange: (val: string) => void;
+};
+
+type PhoneFieldProps = BaseFieldProps & {
+  type: FieldType.PHONE;
+  value: string;
+  onChange: (val: string) => void;
+};
+
+type DateFieldProps = BaseFieldProps & {
+  type: FieldType.DATE;
+  value: string;
+  onConfirm: (date: Date) => void;
+};
+
+type GenderFieldProps = BaseFieldProps & {
+  type: FieldType.GENDER;
+  selected: GenderValue | null;
+  setSelected: (val: GenderValue) => void;
+  options: { key: string; value: GenderValue }[];
+};
+
+type StateFieldProps = BaseFieldProps & {
+  type: FieldType.STATE;
+  selected: string | null;
+  setSelected: (val: string) => void;
+  listData: StateType[];
+};
+
+export type FormFieldProps =
+  | TextFieldProps
+  | PhoneFieldProps
+  | DateFieldProps
+  | GenderFieldProps
+  | StateFieldProps;

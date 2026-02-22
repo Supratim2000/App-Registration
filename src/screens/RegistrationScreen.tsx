@@ -13,8 +13,9 @@ import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { GENDER_SELECTOR_OPTIONS, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
+import { GENDER_SELECTOR_OPTIONS, GenderValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
 import RadioSelector from '../components/RadioSelector';
+import CustomButton from '../components/CustomButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
@@ -46,7 +47,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
     const [selectedState, setSelectedState] = useState<string | null>(null);
     const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
 
-    const [selectedGender, setSelectedGender] = useState<string | null>(null);
+    const [selectedGender, setSelectedGender] = useState<GenderValue | null>(null);
 
     const isSignUpButtonDisabled = useEnable([
         firstNameErrorPresent,
@@ -74,6 +75,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
     };
 
     const navigateBasicInfoScreen = (): void => {
+        Keyboard.dismiss();
         navigation.navigate('BasicInfo', {
             firstName: firstNameInputValue.trim(),
             ...(lastNameInputValue && { lastName: lastNameInputValue.trim() }),
@@ -172,11 +174,12 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                         <CustomDatePicker
                             selectedDate={selectedDate}
                             isError={isDateErrorPresent}
-                            errorPrompt="Please selecte a valid date"
+                            errorPrompt="Please select date"
                             datePickerHandler={showDatePickerHandler}
                             pickerVisible={isDatePickerVisible}
                             confirmHandler={handleSelectedDate}
                             cancelHandler={handleDatePickCancel}
+                            disableFutureDates={true}
                         />
 
                         <StateSelector
@@ -197,19 +200,16 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                             isPortrait={isPortrait}
                             errorPrompt='Please select one gender'/>
 
-                        <View style={styles.marginEffect}></View>
-                            
-                        <TouchableOpacity
-                            disabled={isSignUpButtonDisabled}
-                            activeOpacity={0.5}
-                            style={[styles.signUpButton, isSignUpButtonDisabled ? styles.disabledButton : styles.enabledButton]}
-                            onPress={() => {
-                                Keyboard.dismiss();
-                                navigateBasicInfoScreen();
-                            }}
-                        >
-                            <Text style={styles.signUpText}>Sign Up</Text>
-                        </TouchableOpacity>
+
+                        <CustomButton
+                            isDisabled={isSignUpButtonDisabled}
+                            buttonText='Sign Up'
+                            pressHandler={navigateBasicInfoScreen}
+                            buttonStyle={styles.signUpButton}
+                            enableStyle={styles.enabledButton}
+                            disableStyle={styles.disabledButton}
+                            textStyle={styles.signUpText}
+                            extraStyle={{marginTop: 2}}/>
                     </View>
                 </KeyboardAwareScrollView>
             </SafeAreaView>

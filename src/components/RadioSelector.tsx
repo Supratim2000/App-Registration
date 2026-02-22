@@ -2,14 +2,22 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { GenderSelectorProp, SelectorType } from '../utils/ProjectTypes';
+import { GenderValue } from '../utils/ProjectConstants';
 
-const RadioSelector: React.FC<GenderSelectorProp> = ({ heading, errorPrompt, selectorData, selected, setSelected, isPortrait }): React.JSX.Element => {
+const RadioSelector: React.FC<GenderSelectorProp> = ({
+    heading,
+    errorPrompt,
+    selectorData,
+    selected,
+    setSelected,
+    isPortrait
+}): React.JSX.Element => {
     return (
         <View style={styles.masterContainer}>
             <Text style={styles.headingText}>{ heading }</Text>
 
             <RadioButton.Group
-                onValueChange={newValue => setSelected(newValue)}
+                onValueChange={(newValue: string) => setSelected(newValue as GenderValue)}
                 value={selected ?? ''}
             >
                 <View style={isPortrait ? styles.verticalContainer : styles.horizontalContainer}>
@@ -22,9 +30,9 @@ const RadioSelector: React.FC<GenderSelectorProp> = ({ heading, errorPrompt, sel
                                 activeOpacity={0.7}
                             >
                                 <RadioButton
-                                value={_selector.value}
-                                color="#1778F2"
-                                uncheckedColor="#999"
+                                    value={_selector.value}
+                                    color="#1778F2"
+                                    uncheckedColor="#999"
                                 />
                                 <Text style={styles.radioText}>
                                     {_selector.key}

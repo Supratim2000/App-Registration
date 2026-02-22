@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { DateProps } from '../utils/ProjectTypes';
+import CustomButton from './CustomButton';
 
 const CustomDatePicker: React.FC<DateProps> = ({
     selectedDate,
+    disableFutureDates = false,
     isError,
     errorPrompt,
     datePickerHandler,
@@ -12,7 +14,8 @@ const CustomDatePicker: React.FC<DateProps> = ({
     confirmHandler,
     cancelHandler
 }): React.JSX.Element => {
-    console.log(isError);
+    const maxDate = disableFutureDates ? new Date() : undefined;
+
     return (
         <View style={styles.fieldInputContainer}>
             <Text style={styles.nameHeading}>DOB</Text>
@@ -22,17 +25,18 @@ const CustomDatePicker: React.FC<DateProps> = ({
                     style={[styles.basicTextInputStyle, styles.disabledInput, isError && styles.errorTextInputStyle]}
                     editable={false}
                 />
-                <TouchableOpacity
-                    activeOpacity={0.5}
-                    style={styles.dobPickButton}
-                    onPress={datePickerHandler}
-                >
-                    <Text style={styles.dobPickText}>Pick Date</Text>
-                </TouchableOpacity>
+
+                <CustomButton 
+                    buttonText='Pick Date'
+                    pressHandler={datePickerHandler}
+                    buttonStyle={styles.dobPickButton}
+                    textStyle={styles.dobPickText}
+                />
             </View>
                 {isError ? <Text style={styles.errorText}>{ errorPrompt }</Text> : <Text style={styles.errorText}></Text>}
                 <DateTimePickerModal
                     isVisible={pickerVisible}
+                    maximumDate={maxDate}
                     mode="date"
                     onConfirm={confirmHandler}
                     onCancel={cancelHandler}

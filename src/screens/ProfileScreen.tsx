@@ -10,6 +10,7 @@ import UserInfo from '../components/UserInfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
+import CustomButton from '../components/CustomButton';
 
 type Props = BottomTabScreenProps<AppBottomTabParamList, 'Profile'>;
 
@@ -30,7 +31,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Elemen
     await dispatch(clearRegistrationDataFromAsyncStorage());
 
     navigation.dispatch(
-    CommonActions.reset({
+      CommonActions.reset({
         index: 0,
         routes: [{ name: 'Registration' }],
       })
@@ -43,14 +44,15 @@ const ProfileScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Elemen
         <View style={styles.headingContainer}>
           <Text style={styles.heading}>Profile Information</Text>
 
-          <TouchableOpacity
-            disabled={userLoggingOut}
-            style={[styles.logoutButton, userLoggingOut && styles.logoutButtonDisabled]}
-            activeOpacity={0.7}
-            onPress={handleLogout}
-          >
-            {!userLoggingOut ? <Text style={styles.logoutText}>Logout</Text> : <ActivityIndicator color="#ffffff"/>}
-          </TouchableOpacity>
+          <CustomButton
+            isDisabled={userLoggingOut}
+            showLoadingIndicator={userLoggingOut}
+            buttonText='Logout'
+            pressHandler={handleLogout}
+            buttonStyle={styles.logoutButton}
+            disableStyle={styles.logoutButtonDisabled}
+            textStyle={styles.logoutText}
+            />
         </View>
 
         <View style={styles.card}>
