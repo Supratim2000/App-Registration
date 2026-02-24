@@ -13,9 +13,10 @@ import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { GENDER_SELECTOR_OPTIONS, GenderValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
+import { FieldType, GENDER_SELECTOR_OPTIONS, GenderValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
 import RadioSelector from '../components/RadioSelector';
 import CustomButton from '../components/CustomButton';
+import FormField from '../components/FormField';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
@@ -40,7 +41,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
     const [emailInputValue, setEmailInputValue] = useState<string>('');
     
     const [selectedDate, setSelectedDate] = useState<string>('');
-    const [contactCodeValue, setContactCodeValue] = useState<string>('');
+    const [fullyQualifiedContactValue, setFullyQualifiedContactValue] = useState<string>('');
     const [isDateErrorPresent, setIsDateErrorPresent] = useState<boolean>(true);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
 
@@ -48,6 +49,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
     const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
 
     const [selectedGender, setSelectedGender] = useState<GenderValue | null>(null);
+    const [genderErrorPresent, setGenderErrorPresent] = useState<boolean>(true);
 
     const isSignUpButtonDisabled = useEnable([
         firstNameErrorPresent,
@@ -56,7 +58,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
         emailErrorPresent,
         isDateErrorPresent,
         isStateSelectorError,
-        selectedGender === null
+        genderErrorPresent
     ]);
 
     const handleDatePickCancel = () : void => {
@@ -80,7 +82,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
             firstName: firstNameInputValue.trim(),
             ...(lastNameInputValue && { lastName: lastNameInputValue.trim() }),
             address: addressInputValue.trim(),
-            contact: contactCodeValue.trim(),
+            contact: fullyQualifiedContactValue.trim(),
             email: emailInputValue.trim(),
             dob: selectedDate,
             state: selectedState ?? '',
@@ -111,95 +113,113 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                     </View>
                             
                     <View style={styles.inputExtractionContainer}>
-                        <CustomDataInput
-                            heading='First Name'
-                            infoType='first_name'
-                            isMandatory={true}
-                            isError={firstNameErrorPresent}
-                            errorSetter={setFirstNameErrorPresent}
-                            errorPrompt="First name field can't be empty"
-                            inputData={firstNameInputValue}
-                            setInputData={setFirstNameInputValue}
-                        />
+                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                            <FormField
+                                fieldType={FieldType.TEXT}
+                                heading='First Name'
+                                isMandatory={true}
+                                isError={firstNameErrorPresent}
+                                errorSetter={setFirstNameErrorPresent}
+                                errorPrompt="First name field can't be empty"
+                                inputData={firstNameInputValue}
+                                setInputData={setFirstNameInputValue}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                            />
 
-                        <CustomDataInput
-                            heading='Last Name (Optional)'
-                            infoType='last_name'
-                            inputData={lastNameInputValue}
-                            setInputData={setLastNameInputValue}
-                        />
+                            <FormField
+                                fieldType={FieldType.TEXT}
+                                heading='Last Name (Optional)'
+                                inputData={lastNameInputValue}
+                                setInputData={setLastNameInputValue}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                            />
+                        </View>
 
-                        <CustomDataInput
+                        <FormField
+                            fieldType={FieldType.TEXT}
                             heading='Address'
-                            infoType='address'
                             isMandatory={true}
                             isError={addressErrorPresent}
                             errorSetter={setAddressErrorPresent}
                             errorPrompt="Address field can't be empty"
                             inputData={addressInputValue}
                             setInputData={setAddressInputValue}
+                            inputStyle={styles.addressExtraStyle}
                         />
 
                         <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
-                            <ContactInput
+                            <FormField
+                                fieldType={FieldType.PHONE}
                                 heading='Phone'
                                 isMandatory={true}
                                 isError={contactErrorPresent}
                                 errorSetter={setContactErrorPresent}
                                 errorPrompt="Contact details isn't valid"
-                                contactRef={phoneInputRef}
-                                defaultValue={contactInputValue}
+                                elementRef={phoneInputRef}
+                                contactValue={contactInputValue}
+                                fullyQualifiedContactValue={fullyQualifiedContactValue}
+                                onChangeContactValue={setContactInputValue}
+                                onChangeFullyQualifiedContactValue={setFullyQualifiedContactValue}
                                 defaultCode='IN'
-                                contactCodeValue={contactCodeValue}
-                                textChangeHandler={setContactInputValue}
-                                textChangeFormattedHandler={setContactCodeValue}
-                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%'}}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
                             />
 
-                            <CustomDataInput
+                            <FormField
+                                fieldType={FieldType.EMAIL}
                                 heading='Email'
-                                infoType='email'
-                                inputType='email-address'
                                 isMandatory={true}
                                 isError={emailErrorPresent}
                                 errorSetter={setEmailErrorPresent}
                                 errorPrompt='Entered email is invalid'
                                 inputData={emailInputValue}
                                 setInputData={setEmailInputValue}
-                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%' }}
+                                containerContentStyle={width > WIDTH_THRESHOLD && { width: '49%' }}
                             />
                         </View>
-                        
- 
-                        <CustomDatePicker
-                            selectedDate={selectedDate}
-                            isError={isDateErrorPresent}
-                            errorPrompt="Please select date"
-                            datePickerHandler={showDatePickerHandler}
-                            pickerVisible={isDatePickerVisible}
-                            confirmHandler={handleSelectedDate}
-                            cancelHandler={handleDatePickCancel}
-                            disableFutureDates={true}
-                        />
 
-                        <StateSelector
-                            heading='State'
-                            listData={STATE_DATA}
-                            isMandatory={true}
-                            isError={isStateSelectorError}
-                            errorSetter={setIsStateSelectorError}
-                            errorPrompt='Select a valid state'
-                            inputState={selectedState}
-                            setInputState={setSelectedState} />
+                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                            <FormField
+                                fieldType={FieldType.DATE}
+                                heading='DOB'
+                                isMandatory={true}
+                                isError={isDateErrorPresent}
+                                errorSetter={setIsDateErrorPresent}
+                                errorPrompt="Please select date"
+                                dateValue={selectedDate}
+                                disableFurtherDates={true}
+                                pickerModalVisible={isDatePickerVisible}
+                                datePickerButtonHandler={showDatePickerHandler}
+                                onConfirmSelection={handleSelectedDate}
+                                onCancenSelection={handleDatePickCancel}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                            />
 
-                        <RadioSelector
+                            <FormField
+                                fieldType={FieldType.STATE}
+                                heading='State'
+                                listData={STATE_DATA}
+                                isMandatory={true}
+                                isError={isStateSelectorError}
+                                errorSetter={setIsStateSelectorError}
+                                errorPrompt='Select a valid state'
+                                inputState={selectedState}
+                                setInputState={setSelectedState}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                            />
+                        </View>
+
+                        <FormField
+                            fieldType={FieldType.GENDER}
                             heading='Select Gender'
+                            isMandatory={true}
+                            isError={genderErrorPresent}
+                            errorPrompt='Please select one gender'
+                            errorSetter={setGenderErrorPresent}
                             selectorData={GENDER_SELECTOR_OPTIONS}
-                            selected={selectedGender}
-                            setSelected={setSelectedGender}
-                            isPortrait={isPortrait}
-                            errorPrompt='Please select one gender'/>
-
+                            genderValue={selectedGender}
+                            setGenderValue={setSelectedGender}
+                            isSelectorHorizontal={!isPortrait}
+                        />
 
                         <CustomButton
                             isDisabled={isSignUpButtonDisabled}
@@ -281,7 +301,7 @@ const styles = StyleSheet.create({
     landscapeContactInfoContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     dropdown: {
         borderWidth: 1,
@@ -303,6 +323,10 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     stateSearchInput: {
+    },
+    addressExtraStyle: {
+        height: 98,
+        textAlignVertical: 'top'
     }
 });
 
