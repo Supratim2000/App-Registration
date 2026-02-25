@@ -35,15 +35,15 @@ export type SelectionType = {
 }
 
 export type CustomButtonProp = {
-    isDisabled?: boolean;
-    showLoadingIndicator?: boolean;
-    buttonText: string;
-    pressHandler: () => void;
-    buttonStyle?: StyleProp<ViewStyle>;
-    enableStyle?: StyleProp<ViewStyle>;
-    disableStyle?: StyleProp<ViewStyle>;
-    textStyle?: StyleProp<TextStyle>;
-    extraStyle?: StyleProp<ViewStyle>
+  isDisabled?: boolean;
+  showLoadingIndicator?: boolean;
+  buttonText: string;
+  pressHandler: () => void;
+  buttonStyle?: StyleProp<ViewStyle>;
+  enableStyle?: StyleProp<ViewStyle>;
+  disableStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  extraStyle?: StyleProp<ViewStyle>
 }
 
 type BaseFieldProps = {
