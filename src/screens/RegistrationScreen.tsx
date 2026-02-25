@@ -13,7 +13,7 @@ import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { FieldType, GENDER_SELECTOR_OPTIONS, GenderValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
+import { FieldType, GENDER_SELECTOR_OPTIONS, RadioValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
 import RadioSelector from '../components/RadioSelector';
 import CustomButton from '../components/CustomButton';
 import FormField from '../components/FormField';
@@ -34,21 +34,21 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
     const [addressErrorPresent, setAddressErrorPresent] = useState<boolean>(true);
     const [addressInputValue, setAddressInputValue] = useState<string>('');
 
-    const [contactErrorPresent, setContactErrorPresent] = useState<boolean>(true);
     const [contactInputValue, setContactInputValue] = useState<string>("");
+    const [fullyQualifiedContactValue, setFullyQualifiedContactValue] = useState<string>('');
+    const [contactErrorPresent, setContactErrorPresent] = useState<boolean>(true);
 
     const [emailErrorPresent, setEmailErrorPresent] = useState<boolean>(true);
     const [emailInputValue, setEmailInputValue] = useState<string>('');
     
     const [selectedDate, setSelectedDate] = useState<string>('');
-    const [fullyQualifiedContactValue, setFullyQualifiedContactValue] = useState<string>('');
     const [isDateErrorPresent, setIsDateErrorPresent] = useState<boolean>(true);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
 
     const [selectedState, setSelectedState] = useState<string | null>(null);
     const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
 
-    const [selectedGender, setSelectedGender] = useState<GenderValue | null>(null);
+    const [selectedGender, setSelectedGender] = useState<RadioValue | null>(null);
     const [genderErrorPresent, setGenderErrorPresent] = useState<boolean>(true);
 
     const isSignUpButtonDisabled = useEnable([
@@ -120,7 +120,8 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 isMandatory={true}
                                 isError={firstNameErrorPresent}
                                 errorSetter={setFirstNameErrorPresent}
-                                errorPrompt="First name field can't be empty"
+                                errorPrompt="Field can't be empty or can't contain special character"
+                                specialCharacterCheck={true}
                                 inputData={firstNameInputValue}
                                 setInputData={setFirstNameInputValue}
                                 containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
@@ -144,7 +145,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                             errorPrompt="Address field can't be empty"
                             inputData={addressInputValue}
                             setInputData={setAddressInputValue}
-                            inputStyle={styles.addressExtraStyle}
+                            internalStyle={styles.addressExtraStyle}
                         />
 
                         <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
@@ -173,7 +174,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 errorPrompt='Entered email is invalid'
                                 inputData={emailInputValue}
                                 setInputData={setEmailInputValue}
-                                containerContentStyle={width > WIDTH_THRESHOLD && { width: '49%' }}
+                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
                             />
                         </View>
 
@@ -192,32 +193,37 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 onConfirmSelection={handleSelectedDate}
                                 onCancenSelection={handleDatePickCancel}
                                 containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                buttonStyle={{backgroundColor: '#1778F2'}}
+                                buttonText='Pick Date'
                             />
 
                             <FormField
-                                fieldType={FieldType.STATE}
+                                fieldType={FieldType.SELECTION}
                                 heading='State'
                                 listData={STATE_DATA}
                                 isMandatory={true}
                                 isError={isStateSelectorError}
                                 errorSetter={setIsStateSelectorError}
                                 errorPrompt='Select a valid state'
-                                inputState={selectedState}
-                                setInputState={setSelectedState}
+                                inputSelection={selectedState}
+                                setInputSelection={setSelectedState}
+                                searchEnabled={true}
                                 containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                placeholder='Select State'
+                                searchPlaceholder='Search State...'
                             />
                         </View>
 
                         <FormField
-                            fieldType={FieldType.GENDER}
+                            fieldType={FieldType.RADIO}
                             heading='Select Gender'
                             isMandatory={true}
                             isError={genderErrorPresent}
                             errorPrompt='Please select one gender'
                             errorSetter={setGenderErrorPresent}
                             selectorData={GENDER_SELECTOR_OPTIONS}
-                            genderValue={selectedGender}
-                            setGenderValue={setSelectedGender}
+                            radioValue={selectedGender}
+                            setRadioValue={setSelectedGender}
                             isSelectorHorizontal={!isPortrait}
                         />
 

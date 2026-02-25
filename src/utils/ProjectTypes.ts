@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react"
 import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native"
 import PhoneInput from "react-native-phone-number-input"
 import { TextStyle } from "react-native"
-import { FieldType, GenderValue } from "./ProjectConstants"
+import { FieldType, RadioValue } from "./ProjectConstants"
 
 export type CheckDateGreaterThanTodayReturnType = {
   isGreater: boolean;
@@ -61,10 +61,10 @@ export type DateProps = {
 
 export type SelectorType = {
     key: string;
-    value: GenderValue
+    value: RadioValue
 }
 
-export type StateType = {
+export type SelectionType = {
     label: string;
     value: string
 }
@@ -72,8 +72,8 @@ export type StateType = {
 export type GenderSelectorProp = {
     heading: string;
     selectorData: SelectorType[];
-    selected: GenderValue | null;
-    setSelected: Dispatch<SetStateAction<GenderValue | null>>;
+    selected: RadioValue | null;
+    setSelected: Dispatch<SetStateAction<RadioValue | null>>;
     isPortrait: boolean;
     errorPrompt: string
 }
@@ -113,13 +113,14 @@ type BaseFieldProps = {
   errorPrompt?: string;
   errorSetter?: Dispatch<SetStateAction<boolean>>;
   containerContentStyle?: StyleProp<ViewStyle>;
-  inputStyle?: StyleProp<ViewStyle | TextStyle>;
+  internalStyle?: StyleProp<ViewStyle | TextStyle>;
 };
 
 type TextFieldProps = BaseFieldProps & {
   fieldType: FieldType.TEXT | FieldType.EMAIL;
   inputData: string;
-  setInputData: Dispatch<SetStateAction<string>>
+  setInputData: Dispatch<SetStateAction<string>>,
+  specialCharacterCheck?: boolean
 };
 
 type PhoneFieldProps = BaseFieldProps & {
@@ -140,26 +141,34 @@ type DateFieldProps = BaseFieldProps & {
   datePickerButtonHandler: () => void,
   onConfirmSelection: (date: Date) => void,
   onCancenSelection: () => void,
+  buttonStyle?: StyleProp<ViewStyle>,
+  viewerStyle?: StyleProp<ViewStyle>
+  buttonText?: string, 
 };
 
-type GenderFieldProps = BaseFieldProps & {
-  fieldType: FieldType.GENDER;
+type RadioFieldProps = BaseFieldProps & {
+  fieldType: FieldType.RADIO;
   selectorData: SelectorType[];
-  genderValue: GenderValue | null;
-  setGenderValue: Dispatch<SetStateAction<GenderValue | null>>;
-  isSelectorHorizontal?: boolean
+  radioValue: RadioValue | null;
+  setRadioValue: Dispatch<SetStateAction<RadioValue | null>>;
+  isSelectorHorizontal?: boolean,
+  radioSelectorContainerStyle?: StyleProp<ViewStyle>,
+  fieldSelectorStyle?: StyleProp<ViewStyle>
 };
 
-type StateFieldProps = BaseFieldProps & {
-  fieldType: FieldType.STATE;
+type SelectionFieldProps = BaseFieldProps & {
+  fieldType: FieldType.SELECTION;
   listData: StateObjectType[];
-  inputState: string | null;
-  setInputState: Dispatch<SetStateAction<string | null>>
+  inputSelection: string | null;
+  searchEnabled?: boolean;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  setInputSelection: Dispatch<SetStateAction<string | null>>;
 };
 
 export type FormFieldProps =
   | TextFieldProps
   | PhoneFieldProps
   | DateFieldProps
-  | GenderFieldProps
-  | StateFieldProps;
+  | RadioFieldProps
+  | SelectionFieldProps;

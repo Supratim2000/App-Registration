@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
 import { FormFieldProps, SelectorType } from '../utils/ProjectTypes';
-import { FieldType, GenderValue } from '../utils/ProjectConstants';
-import { checkEmailValidity } from '../utils/ProjectUtils';
+import { FieldType, RadioValue } from '../utils/ProjectConstants';
+import { checkEmailValidity, hasSpecialCharacter } from '../utils/ProjectUtils';
 import PhoneInput from 'react-native-phone-number-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CustomButton from './CustomButton';
@@ -18,71 +18,77 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
         errorSetter = () => {},
         errorPrompt = '',
         containerContentStyle = {},
-        inputStyle = {}
+        internalStyle = {}
     } = props;
 
     const renderedFormField = (): React.JSX.Element | null => {
         switch(props.fieldType) {
             case FieldType.TEXT:
             case FieldType.EMAIL:
-                const textProps = props;
-                console.log(textProps);
+                const specialCharacterCheckEnabled = props.specialCharacterCheck ?? false;
+
                 return (
                     <TextInput
-                        value={textProps.inputData}
+                        value={props.inputData}
                         onChangeText={(text) => {
-                            textProps.setInputData(text);
-                            props.fieldType === FieldType.EMAIL?
-                                errorSetter(!checkEmailValidity(text)):
-                                errorSetter?.(!text.trim().length);
+                            const trimmedText = text.trim();
+                            const isEmpty = trimmedText.length === 0;
+                            const containsSpecialCharacter = specialCharacterCheckEnabled && hasSpecialCharacter(trimmedText);
 
+                            props.setInputData(text);
+
+                            props.fieldType === FieldType.EMAIL?
+                                errorSetter?.(!checkEmailValidity(text)):
+                                errorSetter?.(isEmpty || containsSpecialCharacter);
                         }}
                         keyboardType={props.fieldType === FieldType.EMAIL ? 'email-address' : 'default'}
                         autoCapitalize={ props.fieldType === FieldType.EMAIL ? 'none' : 'words' }
                         autoCorrect={false}
-                        style={[styles.basicTextInputStyle, inputStyle, isError && styles.errorOutlineStyle]}
+                        style={[styles.basicTextInputStyle, internalStyle, isError && styles.errorOutlineStyle]}
                     />
                 );
             case FieldType.PHONE:
                 useEffect(() => {
-                        const checkIfValidContactNumber = props.elementRef.current?.isValidNumber(props.contactValue);
-                        errorSetter(!checkIfValidContactNumber);
-                    }, [props.contactValue, props.fullyQualifiedContactValue]);
+                    const checkIfValidContactNumber = props.elementRef.current?.isValidNumber(props.contactValue);
+                    errorSetter(!checkIfValidContactNumber);
+                }, [props.contactValue]);
 
                 return (
-                        <PhoneInput
-                            ref={props.elementRef}
-                            defaultValue={props.contactValue}
-                            defaultCode={(props.defaultCode ?? 'IN') as React.ComponentProps<typeof PhoneInput>["defaultCode"]}
-                            layout="second"
-                            onChangeText={(text) => {
-                                props.onChangeContactValue(text);
-                            }}
-                            onChangeFormattedText={(text) => {
-                                props.onChangeFullyQualifiedContactValue(text);
-                            }}
-                            autoFocus={false}
-                            containerStyle={[styles.phoneContainer, isError && styles.errorTextInputStyle]}
-                            textContainerStyle={[styles.phoneTextContainer, inputStyle]}
-                            textInputStyle={styles.phoneTextInput}
-                            codeTextStyle={styles.phoneCodeText}
-                            flagButtonStyle={styles.flagButton}
-                        />
+                    <PhoneInput
+                        ref={props.elementRef}
+                        defaultValue={props.contactValue}
+                        defaultCode={(props.defaultCode ?? 'IN') as React.ComponentProps<typeof PhoneInput>["defaultCode"]}
+                        layout="second"
+                        onChangeText={(text) => {
+                            props.onChangeContactValue(text);
+                        }}
+                        onChangeFormattedText={(text) => {
+                            props.onChangeFullyQualifiedContactValue(text);
+                        }}
+                        autoFocus={false}
+                        containerStyle={[styles.phoneContainer, internalStyle, isError && styles.errorTextInputStyle]}
+                        textContainerStyle={styles.phoneTextContainer}
+                        textInputStyle={styles.phoneTextInput}
+                        codeTextStyle={styles.phoneCodeText}
+                        flagButtonStyle={styles.flagButton}
+                    />
                 );
             case FieldType.DATE:
-                const maxDate = props.disableFurtherDates ? new Date() : undefined;
+                const maxDate: Date | undefined = props.disableFurtherDates ? new Date() : undefined;
+                const pickButtonText = props.buttonText ?? 'Pick';
+
                 return (
-                    <View style={[styles.DobContainer]}>
+                    <View style={[styles.DobContainer, internalStyle]}>
                         <TextInput
                             value={props.dateValue}
-                            style={[styles.basicTextInputStyle, styles.disabledInput, isError && styles.errorTextInputStyle]}
+                            style={[styles.basicTextInputStyle, styles.disabledInput, isError && styles.errorTextInputStyle, props.viewerStyle]}
                             editable={false}
                         />
 
                         <CustomButton
-                            buttonText='Pick Date'
+                            buttonText={pickButtonText}
                             pressHandler={props.datePickerButtonHandler}
-                            buttonStyle={styles.dobPickButton}
+                            buttonStyle={[styles.dobPickButton, props.buttonStyle]}
                             textStyle={styles.dobPickText}
                         />
 
@@ -95,9 +101,13 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                         />
                     </View>
                 );
-            case FieldType.STATE:
+            case FieldType.SELECTION:
+                const searchEnabled: boolean = props.searchEnabled ?? false;
+                const placeholder: string = props.placeholder ?? 'Select';
+                const searchPlaceholder: string = props.searchPlaceholder ?? 'Search';
+
                 const handleStateSelect = (stateValue: string): void => {
-                    props.setInputState(stateValue);
+                    props.setInputSelection(stateValue);
                     if(errorSetter) {
                         errorSetter(stateValue === null)
                     }
@@ -105,12 +115,12 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
 
                 return (
                     <Dropdown
-                        style={[styles.dropdown, props.inputStyle, isError && styles.errorTextInputStyle]}
+                        style={[styles.dropdown, props.internalStyle, isError && styles.errorTextInputStyle]}
                         data={props.listData}
                         labelField="label"
                         valueField="value"
-                        placeholder="Select state"
-                        value={props.inputState}
+                        placeholder={placeholder}
+                        value={props.inputSelection}
                         onChange={stateObj => handleStateSelect(stateObj.value)}
                         mode='modal'
                         containerStyle={styles.stateSelectorModal}
@@ -118,31 +128,31 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                         itemTextStyle={styles.stateText}
                         backgroundColor="rgba(0, 0, 0, 0.5)"
                         activeColor="#e9e9e9"
-                        search
-                        searchPlaceholder="Search state..."
+                        search={searchEnabled}
+                        searchPlaceholder={searchPlaceholder}
                         inputSearchStyle={styles.stateSearchInput}
                         autoScroll
                         onFocus={() => Keyboard.dismiss()}
                     />
                 );
-            case FieldType.GENDER:
+            case FieldType.RADIO:
                 return (
-                    <View style={styles.masterContainer}>
+                    <View style={[styles.masterContainer, props.internalStyle]}>
                         <RadioButton.Group
                             onValueChange={(newValue: string) => {
-                                props.setGenderValue(newValue as GenderValue);
+                                props.setRadioValue(newValue as RadioValue);
                                 errorSetter(false);
                             }}
-                            value={props.genderValue ?? ''}
+                            value={props.radioValue ?? ''}
                         >
-                            <View style={props.isSelectorHorizontal ? styles.horizontalContainer : styles.verticalContainer}>
+                            <View style={[props.isSelectorHorizontal ? styles.horizontalContainer : styles.verticalContainer, props.radioSelectorContainerStyle]}>
                                 {
                                     props.selectorData.map((_selector: SelectorType) => (
                                         <TouchableOpacity
                                             key={_selector.value}
-                                            style={styles.individualSelector}
+                                            style={[styles.individualSelector, props.fieldSelectorStyle]}
                                             onPress={() => {
-                                                props.setGenderValue(_selector.value as GenderValue);
+                                                props.setRadioValue(_selector.value as RadioValue);
                                                 errorSetter(false);
                                             }}
                                             activeOpacity={0.7}
@@ -173,15 +183,15 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
 
             {renderedFormField()}
 
-            {isMandatory ? ( <Text style={styles.errorText}>{isError ? errorPrompt : ''}</Text> ) : <Text style={styles.errorText}></Text>}
+            {isMandatory ?
+                (<Text style={styles.errorText}>{isError ? errorPrompt : ''}</Text>) :
+                <Text style={styles.errorText}></Text>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        
-    },
+    container: {},
     heading: {
         color: '#000000',
         fontSize: 18,
@@ -252,7 +262,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginHorizontal: 4,
         paddingHorizontal: 8,
-        backgroundColor: '#1778F2',
+        backgroundColor: '#000000',
         borderRadius: 4,
         height: 48
     },

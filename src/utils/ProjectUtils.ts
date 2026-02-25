@@ -16,6 +16,11 @@ export const checkEmailValidity = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
+export const hasSpecialCharacter = (value: string): boolean => {
+  const regex = /[@#$%^&*]/;
+  return regex.test(value);
+}
+
 export const checkDateGreaterThanToday = (date: Date): CheckDateGreaterThanTodayReturnType => {
   const formattedDate: string = getFormatedDateLocalTimeZone(date);
           
