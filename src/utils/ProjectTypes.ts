@@ -14,49 +14,14 @@ export type HeadingProp = {
     headingMessage: string
 }
 
-export type InputProps = {
-    heading: string;
-    inputType?: KeyboardTypeOptions;
-    infoType: string
-    isMandatory?: boolean;
-    isError?: boolean;
-    errorSetter?: Dispatch<SetStateAction<boolean>>;
-    errorPrompt?: string;
-    inputData: string;
-    setInputData: Dispatch<SetStateAction<string>>;
-    containerStyle?: StyleProp<ViewStyle>
-}
-
 export type StateObjectType = {
     label: string;
     value: string
 }
 
-export type StateSelectorProps = {
-    heading: string;
-    listData: StateObjectType[];
-    isMandatory?: boolean;
-    isError?: boolean;
-    errorSetter?: Dispatch<SetStateAction<boolean>>;
-    errorPrompt?: string;
-    inputState: string | null;
-    setInputState: Dispatch<SetStateAction<string | null>>
-}
-
 export type DataProps = {
     heading: string;
     content: string
-}
-
-export type DateProps = {
-    selectedDate: string;
-    disableFutureDates?: boolean;
-    isError: boolean;
-    errorPrompt: string
-    datePickerHandler: () => void;
-    pickerVisible: boolean;
-    confirmHandler: (date: Date) => void;
-    cancelHandler: () => void
 }
 
 export type SelectorType = {
@@ -69,15 +34,6 @@ export type SelectionType = {
     value: string
 }
 
-export type GenderSelectorProp = {
-    heading: string;
-    selectorData: SelectorType[];
-    selected: RadioValue | null;
-    setSelected: Dispatch<SetStateAction<RadioValue | null>>;
-    isPortrait: boolean;
-    errorPrompt: string
-}
-
 export type CustomButtonProp = {
     isDisabled?: boolean;
     showLoadingIndicator?: boolean;
@@ -88,22 +44,6 @@ export type CustomButtonProp = {
     disableStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
     extraStyle?: StyleProp<ViewStyle>
-}
-
-export type ContactProps = {
-  heading: string;
-  isMandatory?: boolean;
-  isError?: boolean;
-  errorSetter?: Dispatch<SetStateAction<boolean>>;
-  errorPrompt?: string;
-  contactRef: React.RefObject<PhoneInput | null>;
-  defaultValue: string;
-  defaultCode: React.ComponentProps<typeof PhoneInput>["defaultCode"];
-  contactCodeValue: string;
-  textChangeHandler: Dispatch<SetStateAction<string>>;
-  textChangeFormattedHandler: Dispatch<SetStateAction<string>>;
-  autoFocus?: boolean;
-  containerStyle?: StyleProp<ViewStyle>
 }
 
 type BaseFieldProps = {
