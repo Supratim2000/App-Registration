@@ -131,6 +131,9 @@ type PhoneFieldProps = BaseFieldProps & {
   onChangeContactValue: Dispatch<SetStateAction<string>>;
   onChangeFullyQualifiedContactValue: Dispatch<SetStateAction<string>>;
   defaultCode?: React.ComponentProps<typeof PhoneInput>["defaultCode"];
+  placeholder?: string,
+  placeholderTextColor?: string,
+  selectionColor?: string
 };
 
 type DateFieldProps = BaseFieldProps & {
@@ -153,7 +156,9 @@ type RadioFieldProps = BaseFieldProps & {
   setRadioValue: Dispatch<SetStateAction<RadioValue | null>>;
   isSelectorHorizontal?: boolean,
   radioSelectorContainerStyle?: StyleProp<ViewStyle>,
-  fieldSelectorStyle?: StyleProp<ViewStyle>
+  fieldSelectorStyle?: StyleProp<ViewStyle>,
+  radioBorderColor?: string,
+  selectionColor?: string
 };
 
 type SelectionFieldProps = BaseFieldProps & {

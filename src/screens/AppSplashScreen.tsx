@@ -18,22 +18,24 @@ const AppSplashScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Elem
 
     useEffect(() => {
         if(!loading && !error) {
-            firstName === '' ? navigation.replace('Registration') : navigation.replace('BottomTab');
+            navigation.replace(firstName === '' ? 
+                'Registration' : 
+                'BottomTab'
+            );
         }
     },[loading]);
 
     return (
         <View style={styles.loadingContainer}>
-            {
-                error?
-                    <View style={styles.errorSubContainer}>
-                        <Text style={styles.errorHeading}>Failed to fetch user data!</Text>
-                    </View>
-                    :
-                    <View style={styles.loadingSubContainer}>
-                        <Text style={styles.splashHeading}>Checking registration data...</Text>
-                        <ActivityIndicator size={80} color="#1778F2" />
-                    </View>
+            {error?
+                <View style={styles.errorSubContainer}>
+                    <Text style={styles.errorHeading}>Failed to fetch user data!</Text>
+                </View>
+                :
+                <View style={styles.loadingSubContainer}>
+                    <Text style={styles.splashHeading}>Checking registration data...</Text>
+                    <ActivityIndicator size={80} color="#1778F2" />
+                </View>
             }
         </View>
     );
@@ -46,12 +48,13 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     loadingSubContainer: {
+        borderColor: '#1778F2',
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 16,
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
+        elevation: 12,
+        shadowColor: '#1778F2',
+        shadowOpacity: 0.7,
         shadowRadius: 8
     },
     errorSubContainer: {
@@ -59,9 +62,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 16,
-        elevation: 4,
+        elevation: 12,
         shadowColor: '#ff3333',
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.7,
         shadowRadius: 8
     },
     splashHeading: {

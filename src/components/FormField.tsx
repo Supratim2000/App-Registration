@@ -48,6 +48,10 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                     />
                 );
             case FieldType.PHONE:
+                const placeholderValue: string = props.placeholder ?? 'Phone Number';
+                const placeholderTextColorValue: string = props.placeholderTextColor ?? 'black';
+                const selectionColorValue: string = props.selectionColor ?? 'black';
+
                 useEffect(() => {
                     const checkIfValidContactNumber = props.elementRef.current?.isValidNumber(props.contactValue);
                     errorSetter(!checkIfValidContactNumber);
@@ -64,6 +68,11 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                         }}
                         onChangeFormattedText={(text) => {
                             props.onChangeFullyQualifiedContactValue(text);
+                        }}
+                        placeholder={placeholderValue}
+                        textInputProps={{
+                            placeholderTextColor: placeholderTextColorValue,
+                            selectionColor: selectionColorValue,
                         }}
                         autoFocus={false}
                         containerStyle={[styles.phoneContainer, internalStyle, isError && styles.errorTextInputStyle]}
@@ -136,6 +145,9 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                     />
                 );
             case FieldType.RADIO:
+                const radioBorderColor: string = props.radioBorderColor ?? '#000000';
+                const selectionColor: string = props.selectionColor ?? '#000000'
+                
                 return (
                     <View style={[styles.masterContainer, props.internalStyle]}>
                         <RadioButton.Group
@@ -159,8 +171,8 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                                         >
                                             <RadioButton
                                                 value={_selector.value}
-                                                color="#1778F2"
-                                                uncheckedColor="#999"
+                                                color={selectionColor}
+                                                uncheckedColor={radioBorderColor}
                                             />
                                             <Text style={styles.radioText}>
                                                 {_selector.key}

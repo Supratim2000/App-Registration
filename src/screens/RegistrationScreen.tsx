@@ -1,28 +1,25 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { checkDateGreaterThanToday, checkEmailValidity, getFormatedDateLocalTimeZone } from '../utils/ProjectUtils';
+import { checkDateGreaterThanToday, isMobilePortrait } from '../utils/ProjectUtils';
 import AppHeading from '../components/AppHeading';
 import PhoneInput from 'react-native-phone-number-input';
-import CustomDataInput from '../components/CustomDataInput';
-import CustomDatePicker from '../components/CustomDatePicker';
-import ContactInput from '../components/ContactInput';
-import StateSelector from '../components/StateSelector';
 import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { FieldType, GENDER_SELECTOR_OPTIONS, RadioValue, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
-import RadioSelector from '../components/RadioSelector';
+import { FieldType, GENDER_SELECTOR_OPTIONS, RadioValue, STATE_DATA } from '../utils/ProjectConstants';
 import CustomButton from '../components/CustomButton';
 import FormField from '../components/FormField';
+import { useDevicetype } from '../hooks/useDeviceType';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
 const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.Element => {
     const insets = useSafeAreaInsets();
     const { width, height, isPortrait } = useIsPortrait();
+    const deviceType: string = useDevicetype();
 
     const phoneInputRef = useRef<PhoneInput>(null);
 
@@ -113,7 +110,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                     </View>
                             
                     <View style={styles.inputExtractionContainer}>
-                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
                             <FormField
                                 fieldType={FieldType.TEXT}
                                 heading='First Name'
@@ -124,7 +121,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 specialCharacterCheck={true}
                                 inputData={firstNameInputValue}
                                 setInputData={setFirstNameInputValue}
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
                             />
 
                             <FormField
@@ -132,7 +129,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 heading='Last Name (Optional)'
                                 inputData={lastNameInputValue}
                                 setInputData={setLastNameInputValue}
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
                             />
                         </View>
 
@@ -148,7 +145,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                             internalStyle={styles.addressExtraStyle}
                         />
 
-                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
                             <FormField
                                 fieldType={FieldType.PHONE}
                                 heading='Phone'
@@ -162,7 +159,9 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 onChangeContactValue={setContactInputValue}
                                 onChangeFullyQualifiedContactValue={setFullyQualifiedContactValue}
                                 defaultCode='IN'
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                placeholderTextColor='gray'
+                                selectionColor='gray'
                             />
 
                             <FormField
@@ -174,11 +173,11 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 errorPrompt='Entered email is invalid'
                                 inputData={emailInputValue}
                                 setInputData={setEmailInputValue}
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
                             />
                         </View>
 
-                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
+                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
                             <FormField
                                 fieldType={FieldType.DATE}
                                 heading='DOB'
@@ -192,7 +191,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 datePickerButtonHandler={showDatePickerHandler}
                                 onConfirmSelection={handleSelectedDate}
                                 onCancenSelection={handleDatePickCancel}
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
                                 buttonStyle={{backgroundColor: '#1778F2'}}
                                 buttonText='Pick Date'
                             />
@@ -208,7 +207,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 inputSelection={selectedState}
                                 setInputSelection={setSelectedState}
                                 searchEnabled={true}
-                                containerContentStyle={width > WIDTH_THRESHOLD ? { width: '49%'} : { width: '100%'}}
+                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
                                 placeholder='Select State'
                                 searchPlaceholder='Search State...'
                             />
@@ -225,6 +224,8 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                             radioValue={selectedGender}
                             setRadioValue={setSelectedGender}
                             isSelectorHorizontal={!isPortrait}
+                            radioBorderColor='#999'
+                            selectionColor='#1778F2'
                         />
 
                         <CustomButton
@@ -301,10 +302,10 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 20
     },
-    portraitContactInfoContainer: {
+    mobilePortraitContainer: {
         flexDirection: 'column',
     },
-    landscapeContactInfoContainer: {
+    tabletOrientationContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

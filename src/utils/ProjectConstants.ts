@@ -1,6 +1,6 @@
 import { SelectionType, SelectorType } from "./ProjectTypes";
 
-export const WIDTH_THRESHOLD: number = 600;
+export const DIMENTION_THRESHOLD: number = 600;
 
 export const ASYNC_STORAGE_REGISTRATION_KEY = 'registration';
 
