@@ -143,7 +143,7 @@ type DateFieldProps = BaseFieldProps & {
   pickerModalVisible: boolean,
   datePickerButtonHandler: () => void,
   onConfirmSelection: (date: Date) => void,
-  onCancenSelection: () => void,
+  onCancelSelection: () => void,
   buttonStyle?: StyleProp<ViewStyle>,
   viewerStyle?: StyleProp<ViewStyle>
   buttonText?: string, 

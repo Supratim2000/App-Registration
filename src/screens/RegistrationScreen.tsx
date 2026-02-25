@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Keyboard } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Keyboard, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkDateGreaterThanToday, isMobilePortrait } from '../utils/ProjectUtils';
@@ -58,6 +58,12 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
         genderErrorPresent
     ]);
 
+    const isMobileLayout = isMobilePortrait(deviceType, isPortrait);
+
+    const inputWidthStyle = useMemo(() => (
+        isMobileLayout ? { width: '100%' } as ViewStyle : { width: '49%' } as ViewStyle
+    ), [isMobileLayout]);
+
     const handleDatePickCancel = () : void => {
         setIsDatePickerVisible(false);
     };
@@ -77,7 +83,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
         Keyboard.dismiss();
         navigation.navigate('BasicInfo', {
             firstName: firstNameInputValue.trim(),
-            ...(lastNameInputValue && { lastName: lastNameInputValue.trim() }),
+            ...(lastNameInputValue.trim() && { lastName: lastNameInputValue.trim() }),
             address: addressInputValue.trim(),
             contact: fullyQualifiedContactValue.trim(),
             email: emailInputValue.trim(),
@@ -96,7 +102,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
                 <KeyboardAwareScrollView
                     enableOnAndroid
-                    extraScrollHeight={40}
+                    extraScrollHeight={70}
                     keyboardShouldPersistTaps='handled'
                     showsVerticalScrollIndicator={true}
                     enableAutomaticScroll={true}
@@ -110,7 +116,10 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                     </View>
                             
                     <View style={styles.inputExtractionContainer}>
-                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
                             <FormField
                                 fieldType={FieldType.TEXT}
                                 heading='First Name'
@@ -121,7 +130,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 specialCharacterCheck={true}
                                 inputData={firstNameInputValue}
                                 setInputData={setFirstNameInputValue}
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
                             />
 
                             <FormField
@@ -129,7 +138,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 heading='Last Name (Optional)'
                                 inputData={lastNameInputValue}
                                 setInputData={setLastNameInputValue}
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
                             />
                         </View>
 
@@ -145,7 +154,10 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                             internalStyle={styles.addressExtraStyle}
                         />
 
-                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
                             <FormField
                                 fieldType={FieldType.PHONE}
                                 heading='Phone'
@@ -159,7 +171,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 onChangeContactValue={setContactInputValue}
                                 onChangeFullyQualifiedContactValue={setFullyQualifiedContactValue}
                                 defaultCode='IN'
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
                                 placeholderTextColor='gray'
                                 selectionColor='gray'
                             />
@@ -173,11 +185,14 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 errorPrompt='Entered email is invalid'
                                 inputData={emailInputValue}
                                 setInputData={setEmailInputValue}
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
                             />
                         </View>
 
-                        <View style={[isMobilePortrait(deviceType, isPortrait) ? styles.mobilePortraitContainer : styles.tabletOrientationContainer]}>
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
                             <FormField
                                 fieldType={FieldType.DATE}
                                 heading='DOB'
@@ -190,8 +205,8 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 pickerModalVisible={isDatePickerVisible}
                                 datePickerButtonHandler={showDatePickerHandler}
                                 onConfirmSelection={handleSelectedDate}
-                                onCancenSelection={handleDatePickCancel}
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                onCancelSelection={handleDatePickCancel}
+                                containerContentStyle={inputWidthStyle}
                                 buttonStyle={{backgroundColor: '#1778F2'}}
                                 buttonText='Pick Date'
                             />
@@ -207,7 +222,7 @@ const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX
                                 inputSelection={selectedState}
                                 setInputSelection={setSelectedState}
                                 searchEnabled={true}
-                                containerContentStyle={isMobilePortrait(deviceType, isPortrait) ? { width: '100%'} : { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
                                 placeholder='Select State'
                                 searchPlaceholder='Search State...'
                             />

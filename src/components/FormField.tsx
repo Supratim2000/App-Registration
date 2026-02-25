@@ -48,23 +48,24 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                     />
                 );
             case FieldType.PHONE:
-                const placeholderValue: string = props.placeholder ?? 'Phone Number';
+                const placeholderValue: string = props.placeholder ?? ' ';
                 const placeholderTextColorValue: string = props.placeholderTextColor ?? 'black';
                 const selectionColorValue: string = props.selectionColor ?? 'black';
 
-                useEffect(() => {
-                    const checkIfValidContactNumber = props.elementRef.current?.isValidNumber(props.contactValue);
-                    errorSetter(!checkIfValidContactNumber);
-                }, [props.contactValue]);
+                const isValidNumber = (number: string): boolean => {
+                    const elementReference = props.elementRef.current;
+                    return elementReference ? elementReference.isValidNumber(number) : false;
+                }
 
                 return (
                     <PhoneInput
                         ref={props.elementRef}
-                        defaultValue={props.contactValue}
+                        value={props.contactValue}
                         defaultCode={(props.defaultCode ?? 'IN') as React.ComponentProps<typeof PhoneInput>["defaultCode"]}
                         layout="second"
                         onChangeText={(text) => {
                             props.onChangeContactValue(text);
+                            errorSetter(!isValidNumber(text));
                         }}
                         onChangeFormattedText={(text) => {
                             props.onChangeFullyQualifiedContactValue(text);
@@ -106,7 +107,7 @@ const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
                             maximumDate={maxDate}
                             mode="date"
                             onConfirm={props.onConfirmSelection}
-                            onCancel={props.onCancenSelection}
+                            onCancel={props.onCancelSelection}
                         />
                     </View>
                 );

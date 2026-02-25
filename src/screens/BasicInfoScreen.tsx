@@ -6,8 +6,8 @@ import { RootStackParamList } from '../navigation/types';
 import useIsPortrait from '../hooks/useIsPortrait';
 import DataViewer from '../components/DataViewer';
 import AppHeading from '../components/AppHeading';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/types';
 import { saveRegistrationDataIntoAsyncStorage } from '../redux/slices/RegistrationSlice';
 import CustomButton from '../components/CustomButton';
 import UserInfo from '../components/UserInfo';
@@ -20,6 +20,7 @@ const BasicInfoScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.El
     const [isSubmited, setIsSubmited] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
 
+    const { loading, error } = useSelector((state: RootState) => state.registration);
     const dispatch = useDispatch<AppDispatch>();
     
     const handleFormSubmit = async (): Promise<void> =>{
@@ -86,14 +87,22 @@ const BasicInfoScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.El
                     </View>
 
                     <View style={styles.basicInfoContainer}>
-                        <UserInfo heading="First Name" value={firstName} />
-                        {lastName && <UserInfo heading="Last Name" value={lastName} />}
-                        <UserInfo heading="Address" value={address} />
-                        <UserInfo heading="Phone" value={contact} />
-                        <UserInfo heading="Email" value={email} />
-                        <UserInfo heading="DOB" value={dob} />
-                        <UserInfo heading="State" value={state} />
-                        <UserInfo heading="Gender" value={gender} />
+                        {loading ? 
+                            <ActivityIndicator size={60} color="#1778F2" /> :
+                            (error ? 
+                                <Text style={styles.errorText}>Registration Failed</Text> : 
+                                <>
+                                    <UserInfo heading="First Name" value={firstName} />
+                                    {lastName && <UserInfo heading="Last Name" value={lastName} />}
+                                    <UserInfo heading="Address" value={address} />
+                                    <UserInfo heading="Phone" value={contact} />
+                                    <UserInfo heading="Email" value={email} />
+                                    <UserInfo heading="DOB" value={dob} />
+                                    <UserInfo heading="State" value={state} />
+                                    <UserInfo heading="Gender" value={gender} />
+                                </>
+                            )
+                        }
                     </View>
 
                     <View style={[styles.buttonContainer, { marginTop: 18 }]}>
@@ -230,7 +239,13 @@ const styles = StyleSheet.create({
     cancelButton: {
         borderWidth: 1,
         borderColor: '#1778F2',
-    }
+    },
+    errorText: {
+        fontSize: 20,
+        fontFamily: 'PTSerif-Bold',
+        color: '#ff0000',
+        textAlign: 'center'
+  }
 });
 
 export default BasicInfoScreen;

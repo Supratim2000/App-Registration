@@ -20,15 +20,25 @@ const initialState: RegistrationStoreType = {
 export const saveRegistrationDataIntoAsyncStorage = createAsyncThunk<void, UserDataType>(
     'registration/save',
     async (data, thunkAPI) => {
-        await AsyncStorage.setItem(ASYNC_STORAGE_REGISTRATION_KEY, JSON.stringify(data));
+        try {
+            await AsyncStorage.setItem(ASYNC_STORAGE_REGISTRATION_KEY, JSON.stringify(data));
+        } catch(error) {
+            console.error(error);
+            throw error;
+        }
     }
 );
 
 export const retriveRegistrationDataFromAsyncStorage = createAsyncThunk(
     'registration/fetch',
     async (): Promise<UserDataType | null> => {
-        const registrationData = await AsyncStorage.getItem(ASYNC_STORAGE_REGISTRATION_KEY);
-        return registrationData? JSON.parse(registrationData) as UserDataType : null;
+        try {
+            const registrationData = await AsyncStorage.getItem(ASYNC_STORAGE_REGISTRATION_KEY);
+            return registrationData? JSON.parse(registrationData) as UserDataType : null;
+        } catch(error) {
+            console.error(error);
+            throw error;
+        }
     }
 );
 
@@ -39,6 +49,7 @@ export const clearRegistrationDataFromAsyncStorage = createAsyncThunk(
             await AsyncStorage.removeItem(ASYNC_STORAGE_REGISTRATION_KEY);
         } catch(error) {
             console.error(error);
+            throw error;
         }
     }
 );
