@@ -34,6 +34,13 @@ export type SelectionType = {
     value: string
 }
 
+export type CampaignCardProp = {
+  id?: string,
+  image?: string,
+  heading?: string,
+  description?: string
+}
+
 export type CustomButtonProp = {
   isDisabled?: boolean;
   showLoadingIndicator?: boolean;
