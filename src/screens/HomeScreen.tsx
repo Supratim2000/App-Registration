@@ -67,11 +67,41 @@ const DATA = [
     description:
       "Bring fun and fitness to your backyard with our premium trampolines designed for safety and durability. Featuring reinforced frames, high-quality springs, and protective safety nets, they provide an enjoyable jumping experience for both kids and adults. This special promotion lets you save big while giving your family endless outdoor entertainment."
   },
+  {
+    id: "9",
+    title: "Bike Sale",
+    image: "https://picsum.photos/300/200",
+    description:
+      "Discover our latest range of high-quality bicycles designed for comfort, durability, and performance. Whether you're commuting to work, exploring city streets, or heading out on weekend adventures, these bikes offer smooth rides, reliable brakes, and lightweight frames. Take advantage of our limited-time sale and upgrade your ride with premium features at an unbeatable price."
+  },
+  {
+    id: "10",
+    title: "Robot Mower",
+    image: "https://picsum.photos/300/201",
+    description:
+      "Maintain a perfectly trimmed lawn without the hassle using our advanced robotic mower. Equipped with intelligent navigation, obstacle detection, and quiet operation, this smart device automatically handles complex lawn layouts with ease. Simply schedule mowing times through the companion app and enjoy a consistently neat garden while saving time and effort."
+  },
+  {
+    id: "11",
+    title: "Garden Furniture",
+    image: "https://picsum.photos/300/202",
+    description:
+      "Transform your outdoor space into a relaxing retreat with our stylish and durable garden furniture collection. Crafted from weather-resistant materials and designed for comfort, these sets are perfect for hosting guests, enjoying family dinners, or simply unwinding outdoors. From elegant dining tables to cozy lounge chairs, create the perfect backyard atmosphere."
+  },
+  {
+    id: "12",
+    title: "Finis",
+    image: "https://picsum.photos/300/203",
+    description:
+      "Last Card"
+  },
 ];
 
 const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element => {
   const flatListRef = useRef<FlatList<CampaignCardProp>>(null);
   let scrollOffset = useRef<number>(0);
+  const contentTotalWidth = useRef<number>(0);
+  const visibleLayoutWidth = useRef<number>(0);
   let [arrowVisibility, setArrowVisibility] = useState<any>({
     left: false,
     right: true
@@ -83,31 +113,22 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
   const CARD_MARGIN_WIDTH = 16;
 
   const scrollRight = () => {
-    const maxOffset = (DATA.length * (CARD_WIDTH + CARD_MARGIN_WIDTH)) - CARD_WIDTH;
+    const maxOffset = contentTotalWidth.current - visibleLayoutWidth.current;
+    scrollOffset.current = Math.min(scrollOffset.current + (CARD_WIDTH + CARD_MARGIN_WIDTH), maxOffset);
 
-    if (scrollOffset.current < maxOffset) {
-      scrollOffset.current += (CARD_WIDTH + CARD_MARGIN_WIDTH);
-
-      flatListRef.current?.scrollToOffset({
-        offset: scrollOffset.current,
-        animated: true
-      });
-    }
+    flatListRef.current?.scrollToOffset({
+      offset: scrollOffset.current,
+      animated: true
+    });
   }
 
   const scrollLeft = () => {
-    if (scrollOffset.current > 0) {
-      scrollOffset.current -= (CARD_WIDTH + CARD_MARGIN_WIDTH);
-
-      if (scrollOffset.current < 0) {
-        scrollOffset.current = 0;
-      }
+      scrollOffset.current = Math.max(scrollOffset.current - (CARD_WIDTH + CARD_MARGIN_WIDTH), 0);
 
       flatListRef.current?.scrollToOffset({
         offset: scrollOffset.current,
         animated: true
       });
-    }
   }
 
   return (
@@ -141,9 +162,17 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
           showsHorizontalScrollIndicator={false}
           snapToInterval={276}
           decelerationRate="fast"
+          onLayout={(event) => {
+            visibleLayoutWidth.current = event.nativeEvent.layout.width;
+          }}
+          onContentSizeChange={(width) => {
+            contentTotalWidth.current = width;
+          }}
           onScroll={(event) => {
             const offset = event.nativeEvent.contentOffset.x;
             scrollOffset.current = offset;
+
+            console.log(scrollOffset.current);
           }}
 
           onMomentumScrollEnd = {(event) => {
@@ -151,7 +180,7 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
             const contentWidth = event.nativeEvent.contentSize.width;
             const layoutWidth = event.nativeEvent.layoutMeasurement.width;
 
-             const maxOffset = contentWidth - layoutWidth;
+            const maxOffset = contentWidth - layoutWidth;
 
             const isLeftArrowVisible = offset > 3;
             const isRightArrowVisible = offset < maxOffset - 3;
@@ -207,7 +236,8 @@ const styles = StyleSheet.create({
   },
 
   sliderContainer: {
-    position: "relative"
+    position: "relative",
+    paddingVertical: 5,
   },
 
   card: {
@@ -234,10 +264,10 @@ const styles = StyleSheet.create({
 arrowButton: {
   position: "absolute",
   top: "40%",
-  width: 44,
-  height: 44,
-  borderRadius: 22,
-  backgroundColor: "rgba(255,255,255,0.85)",
+  width: 48,
+  height: 48,
+  borderRadius: 24,
+  backgroundColor: "rgba(255,255,255,0.9)",
   justifyContent: "center",
   alignItems: "center",
   shadowColor: "#000",
