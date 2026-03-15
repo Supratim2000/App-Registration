@@ -5,92 +5,93 @@ import { AppBottomTabParamList } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CampaignCard from '../components/CampaignCard';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
-import { CampaignCardProp } from '../utils/ProjectTypes';
+import { CampaignCardProps } from '../utils/ProjectTypes';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import CarouselSlider from '../components/CarouselSlider';
 
 type Props = BottomTabScreenProps<AppBottomTabParamList, 'Home'>;
 
 const DATA = [
   {
     id: "1",
-    title: "Bike Sale",
-    image: "https://picsum.photos/300/200",
+    heading: "Start",
+    image: "https://picsum.photos/300/203",
     description:
-      "Discover our latest range of high-quality bicycles designed for comfort, durability, and performance. Whether you're commuting to work, exploring city streets, or heading out on weekend adventures, these bikes offer smooth rides, reliable brakes, and lightweight frames. Take advantage of our limited-time sale and upgrade your ride with premium features at an unbeatable price."
+      "First Card"
   },
   {
     id: "2",
-    title: "Robot Mower",
+    heading: "Robot Mower",
     image: "https://picsum.photos/300/201",
     description:
       "Maintain a perfectly trimmed lawn without the hassle using our advanced robotic mower. Equipped with intelligent navigation, obstacle detection, and quiet operation, this smart device automatically handles complex lawn layouts with ease. Simply schedule mowing times through the companion app and enjoy a consistently neat garden while saving time and effort."
   },
   {
     id: "3",
-    title: "Garden Furniture",
+    heading: "Garden Furniture",
     image: "https://picsum.photos/300/202",
     description:
       "Transform your outdoor space into a relaxing retreat with our stylish and durable garden furniture collection. Crafted from weather-resistant materials and designed for comfort, these sets are perfect for hosting guests, enjoying family dinners, or simply unwinding outdoors. From elegant dining tables to cozy lounge chairs, create the perfect backyard atmosphere."
   },
   {
     id: "4",
-    title: "Trampoline Sale",
+    heading: "Trampoline Sale",
     image: "https://picsum.photos/300/203",
     description:
       "Bring fun and fitness to your backyard with our premium trampolines designed for safety and durability. Featuring reinforced frames, high-quality springs, and protective safety nets, they provide an enjoyable jumping experience for both kids and adults. This special promotion lets you save big while giving your family endless outdoor entertainment."
   },
   {
     id: "5",
-    title: "Bike Sale",
+    heading: "Bike Sale",
     image: "https://picsum.photos/300/200",
     description:
       "Discover our latest range of high-quality bicycles designed for comfort, durability, and performance. Whether you're commuting to work, exploring city streets, or heading out on weekend adventures, these bikes offer smooth rides, reliable brakes, and lightweight frames. Take advantage of our limited-time sale and upgrade your ride with premium features at an unbeatable price."
   },
   {
     id: "6",
-    title: "Robot Mower",
+    heading: "Robot Mower",
     image: "https://picsum.photos/300/201",
     description:
       "Maintain a perfectly trimmed lawn without the hassle using our advanced robotic mower. Equipped with intelligent navigation, obstacle detection, and quiet operation, this smart device automatically handles complex lawn layouts with ease. Simply schedule mowing times through the companion app and enjoy a consistently neat garden while saving time and effort."
   },
   {
     id: "7",
-    title: "Garden Furniture",
+    heading: "Garden Furniture",
     image: "https://picsum.photos/300/202",
     description:
       "Transform your outdoor space into a relaxing retreat with our stylish and durable garden furniture collection. Crafted from weather-resistant materials and designed for comfort, these sets are perfect for hosting guests, enjoying family dinners, or simply unwinding outdoors. From elegant dining tables to cozy lounge chairs, create the perfect backyard atmosphere."
   },
   {
     id: "8",
-    title: "Trampoline Sale",
+    heading: "Trampoline Sale",
     image: "https://picsum.photos/300/203",
     description:
       "Bring fun and fitness to your backyard with our premium trampolines designed for safety and durability. Featuring reinforced frames, high-quality springs, and protective safety nets, they provide an enjoyable jumping experience for both kids and adults. This special promotion lets you save big while giving your family endless outdoor entertainment."
   },
   {
     id: "9",
-    title: "Bike Sale",
+    heading: "Bike Sale",
     image: "https://picsum.photos/300/200",
     description:
       "Discover our latest range of high-quality bicycles designed for comfort, durability, and performance. Whether you're commuting to work, exploring city streets, or heading out on weekend adventures, these bikes offer smooth rides, reliable brakes, and lightweight frames. Take advantage of our limited-time sale and upgrade your ride with premium features at an unbeatable price."
   },
   {
     id: "10",
-    title: "Robot Mower",
+    heading: "Robot Mower",
     image: "https://picsum.photos/300/201",
     description:
       "Maintain a perfectly trimmed lawn without the hassle using our advanced robotic mower. Equipped with intelligent navigation, obstacle detection, and quiet operation, this smart device automatically handles complex lawn layouts with ease. Simply schedule mowing times through the companion app and enjoy a consistently neat garden while saving time and effort."
   },
   {
     id: "11",
-    title: "Garden Furniture",
+    heading: "Garden Furniture",
     image: "https://picsum.photos/300/202",
     description:
       "Transform your outdoor space into a relaxing retreat with our stylish and durable garden furniture collection. Crafted from weather-resistant materials and designed for comfort, these sets are perfect for hosting guests, enjoying family dinners, or simply unwinding outdoors. From elegant dining tables to cozy lounge chairs, create the perfect backyard atmosphere."
   },
   {
     id: "12",
-    title: "Finis",
+    heading: "Finish",
     image: "https://picsum.photos/300/203",
     description:
       "Last Card"
@@ -98,8 +99,8 @@ const DATA = [
 ];
 
 const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element => {
-  const flatListRef = useRef<FlatList<CampaignCardProp>>(null);
-  let scrollOffset = useRef<number>(0);
+  const flatListRef = useRef<FlatList<CampaignCardProps>>(null);
+  const scrollOffset = useRef<number>(0);
   const contentTotalWidth = useRef<number>(0);
   const visibleLayoutWidth = useRef<number>(0);
   let [arrowVisibility, setArrowVisibility] = useState<any>({
@@ -134,21 +135,20 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
   return (
   <SafeAreaView style={{ flex: 1 }} edges={['top' , 'left', 'right']}>
 
-      <Text style={styles.heading}>Popular Campaigns</Text>
+      {/* <Text style={styles.heading}>Popular Campaigns</Text> */}
 
-      <View style={styles.sliderContainer}>
+      {/* <View style={styles.sliderContainer}> */}
 
-        <Animated.View 
+        {/* <Animated.View 
           style={[styles.arrowButton, styles.arrowLeft, {opacity: leftArrowOpacity}]}
           pointerEvents={arrowVisibility.left ? "auto" : "none"}
         >
           <TouchableOpacity activeOpacity={1.0} onPress={scrollLeft}>
             <Icon name="chevron-left" size={26} color="#333" />
           </TouchableOpacity>
-        </Animated.View>
+        </Animated.View> */}
 
-        {/* SCROLL LIST */}
-        <FlatList
+        {/* <FlatList
           ref={flatListRef}
           data={DATA}
           horizontal
@@ -208,18 +208,35 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
             });
           }}
           scrollEventThrottle={16}
-        />
+        /> */}
 
-        <Animated.View
+        {/* <Animated.View
           style={[styles.arrowButton, styles.arrowRight, {opacity : rightArrowOpacity}]}
           pointerEvents={arrowVisibility.right ? "auto" : "none"}
         >
           <TouchableOpacity activeOpacity={1.0} onPress={scrollRight}>
             <Icon name="chevron-right" size={26} color="#333" />
           </TouchableOpacity>
-        </Animated.View>
+        </Animated.View> */}
 
-      </View>
+      {/* </View> */}
+
+      <CarouselSlider<CampaignCardProps>
+        heading="Popular Campaigns"
+        data={DATA}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <CampaignCard
+            id={item.id}
+            image={item.image}
+            heading={item.heading}
+            description={item.description}
+          />
+        )}
+        onItemPress={(item) => {
+          console.log('Clicked campaign:', item.heading);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -228,7 +245,7 @@ const styles = StyleSheet.create({
   homeScreenContainer: {
     flex: 1
   },
-    heading: {
+  heading: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,

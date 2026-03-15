@@ -1,9 +1,9 @@
 import React from 'react';
-import { CampaignCardProp } from '../utils/ProjectTypes';
+import { CampaignCardProps } from '../utils/ProjectTypes';
 import { Image, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const CampaignCard: React.FC<CampaignCardProp> = ({ id, image, heading, description }): React.JSX.Element => {
+const CampaignCard: React.FC<CampaignCardProps> = ({ id, image, heading, description }): React.JSX.Element => {
     return (
         <View style={styles.card}>
             <Image source={{ uri: image }} style={styles.image} />
@@ -20,7 +20,7 @@ const CampaignCard: React.FC<CampaignCardProp> = ({ id, image, heading, descript
 
 const styles = StyleSheet.create({
   card: {
-    width: 260,
+    width: 400,
     backgroundColor: "#fff",
     borderRadius: 10,
     marginHorizontal: 8,

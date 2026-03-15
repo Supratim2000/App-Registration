@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
-import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native"
+import { KeyboardTypeOptions, ListRenderItem, StyleProp, ViewStyle } from "react-native"
 import PhoneInput from "react-native-phone-number-input"
 import { TextStyle } from "react-native"
 import { FieldType, RadioValue } from "./ProjectConstants"
@@ -34,11 +34,19 @@ export type SelectionType = {
     value: string
 }
 
-export type CampaignCardProp = {
-  id?: string,
+export type CampaignCardProps = {
+  id: string,
   image?: string,
   heading?: string,
   description?: string
+}
+
+export type CarouselSliderProps<T> = {
+  heading?: string,
+  data: T[];
+  renderItem: ListRenderItem<T>;
+  keyExtractor: (item: T, index: number) => string;
+  onItemPress?: (item: T, index: number) => void;
 }
 
 export type CustomButtonProp = {
