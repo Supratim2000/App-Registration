@@ -1,32 +1,30 @@
 import { CheckDateGreaterThanTodayReturnType } from "./ProjectTypes";
 
-export const getFormatedDateLocalTimeZone = (date: Date) : string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const formattedDate = `${day}-${month}-${year}`;
-    return formattedDate;
-};
+export const getFormatedDateLocalTimeZone = (date: Date): string => date.toLocaleDateString('en-GB').replace(/\//g, '-');
 
 export const checkEmailValidity = (email: string): boolean => {
-  const emailRegex =
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
 
   return emailRegex.test(email);
 };
 
+export const hasSpecialCharacter = (value: string): boolean => {
+  const regex = /[@#$%^&*]/;
+  return regex.test(value);
+}
+
 export const checkDateGreaterThanToday = (date: Date): CheckDateGreaterThanTodayReturnType => {
-  const formattedDate: string = getFormatedDateLocalTimeZone(date);
-          
-  const currentDate: Date = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  
-  const selectedDate: Date = date;
-  selectedDate.setHours(0, 0, 0, 0);                  
+const formattedDate = getFormatedDateLocalTimeZone(date);
+  const today = new Date();
+  const startOfToday = new Date(today.toDateString());
+  const startOfSelected = new Date(date.toDateString());
 
   return {
-    isGreater: selectedDate > currentDate,
-    formattedDate
+    isGreater: startOfSelected > startOfToday,
+    formattedDate,
   };
+}
+
+export const isMobilePortrait = (deviceType: string, isPortrait: boolean): boolean => {
+    return deviceType === 'mobile' && isPortrait;
 }

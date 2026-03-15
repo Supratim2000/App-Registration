@@ -4,7 +4,6 @@ import { Store } from "./store";
 export type RegistrationStoreType = UserDataType & {
     loading: boolean;
     error: string | null;
-    isInitialized: boolean
 };
 
 export type RootState = ReturnType<typeof Store.getState>;

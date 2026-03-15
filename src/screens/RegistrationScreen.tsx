@@ -1,26 +1,25 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Keyboard, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { checkDateGreaterThanToday, checkEmailValidity, getFormatedDateLocalTimeZone } from '../utils/ProjectUtils';
+import { checkDateGreaterThanToday, isMobilePortrait } from '../utils/ProjectUtils';
 import AppHeading from '../components/AppHeading';
 import PhoneInput from 'react-native-phone-number-input';
-import CustomDataInput from '../components/CustomDataInput';
-import CustomDatePicker from '../components/CustomDatePicker';
-import ContactInput from '../components/ContactInput';
-import StateSelector from '../components/StateSelector';
 import useIsPortrait from '../hooks/useIsPortrait';
 import useEnable from '../hooks/useEnable';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { GENDER_SELECTOR_OPTIONS, STATE_DATA, WIDTH_THRESHOLD } from '../utils/ProjectConstants';
-import RadioSelector from '../components/RadioSelector';
+import { FieldType, GENDER_SELECTOR_OPTIONS, RadioValue, STATE_DATA } from '../utils/ProjectConstants';
+import CustomButton from '../components/CustomButton';
+import FormField from '../components/FormField';
+import { useDevicetype } from '../hooks/useDeviceType';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Registration'>;
 
-const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.Element => {
+const RegistrationScreen : React.FC<Props> = ({ navigation, route }) : React.JSX.Element => {
     const insets = useSafeAreaInsets();
     const { width, height, isPortrait } = useIsPortrait();
+    const deviceType: string = useDevicetype();
 
     const phoneInputRef = useRef<PhoneInput>(null);
 
@@ -32,31 +31,38 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
     const [addressErrorPresent, setAddressErrorPresent] = useState<boolean>(true);
     const [addressInputValue, setAddressInputValue] = useState<string>('');
 
-    const [contactErrorPresent, setContactErrorPresent] = useState<boolean>(true);
     const [contactInputValue, setContactInputValue] = useState<string>("");
+    const [fullyQualifiedContactValue, setFullyQualifiedContactValue] = useState<string>('');
+    const [contactErrorPresent, setContactErrorPresent] = useState<boolean>(true);
 
     const [emailErrorPresent, setEmailErrorPresent] = useState<boolean>(true);
     const [emailInputValue, setEmailInputValue] = useState<string>('');
     
-    const [selectedDate, setSelectedDate] = useState<string>(getFormatedDateLocalTimeZone(new Date()));
-    const [contactCodeValue, setContactCodeValue] = useState<string>("");
-    const [isDobGreaterThanCurrent, setDobGreaterThanCurrent] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [isDateErrorPresent, setIsDateErrorPresent] = useState<boolean>(true);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
 
     const [selectedState, setSelectedState] = useState<string | null>(null);
     const [isStateSelectorError, setIsStateSelectorError] = useState<boolean>(true);
 
-    const [selectedGender, setSelectedGender] = useState<string | null>(null);
+    const [selectedGender, setSelectedGender] = useState<RadioValue | null>(null);
+    const [genderErrorPresent, setGenderErrorPresent] = useState<boolean>(true);
 
     const isSignUpButtonDisabled = useEnable([
         firstNameErrorPresent,
         addressErrorPresent,
         contactErrorPresent,
         emailErrorPresent,
-        isDobGreaterThanCurrent,
+        isDateErrorPresent,
         isStateSelectorError,
-        selectedGender === null
+        genderErrorPresent
     ]);
+
+    const isMobileLayout = isMobilePortrait(deviceType, isPortrait);
+
+    const inputWidthStyle = useMemo(() => (
+        isMobileLayout ? { width: '100%' } as ViewStyle : { width: '49%' } as ViewStyle
+    ), [isMobileLayout]);
 
     const handleDatePickCancel = () : void => {
         setIsDatePickerVisible(false);
@@ -64,8 +70,8 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
 
     const handleSelectedDate = (date: Date) : void => {
         const { isGreater, formattedDate } = checkDateGreaterThanToday(date);
-        setDobGreaterThanCurrent(isGreater);
-        setSelectedDate(formattedDate);
+        setIsDateErrorPresent(isGreater);
+        isGreater ? setSelectedDate('') : setSelectedDate(formattedDate);
         setIsDatePickerVisible(false);
     };
 
@@ -74,11 +80,12 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
     };
 
     const navigateBasicInfoScreen = (): void => {
+        Keyboard.dismiss();
         navigation.navigate('BasicInfo', {
             firstName: firstNameInputValue.trim(),
-            ...(lastNameInputValue && { lastName: lastNameInputValue.trim() }),
+            ...(lastNameInputValue.trim() && { lastName: lastNameInputValue.trim() }),
             address: addressInputValue.trim(),
-            contact: contactCodeValue.trim(),
+            contact: fullyQualifiedContactValue.trim(),
             email: emailInputValue.trim(),
             dob: selectedDate,
             state: selectedState ?? '',
@@ -95,7 +102,7 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
                 <KeyboardAwareScrollView
                     enableOnAndroid
-                    extraScrollHeight={40}
+                    extraScrollHeight={70}
                     keyboardShouldPersistTaps='handled'
                     showsVerticalScrollIndicator={true}
                     enableAutomaticScroll={true}
@@ -109,107 +116,142 @@ const RegistrationScreen : React.FC<Props> = ({navigation, route}) : React.JSX.E
                     </View>
                             
                     <View style={styles.inputExtractionContainer}>
-                        <CustomDataInput
-                            heading='First Name'
-                            infoType='first_name'
-                            isMandatory={true}
-                            isError={firstNameErrorPresent}
-                            errorSetter={setFirstNameErrorPresent}
-                            errorPrompt="First name field can't be empty"
-                            inputData={firstNameInputValue}
-                            setInputData={setFirstNameInputValue}
-                        />
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
+                            <FormField
+                                fieldType={FieldType.TEXT}
+                                heading='First Name'
+                                isMandatory={true}
+                                isError={firstNameErrorPresent}
+                                errorSetter={setFirstNameErrorPresent}
+                                errorPrompt="Field can't be empty or can't contain special character"
+                                specialCharacterCheck={true}
+                                inputData={firstNameInputValue}
+                                setInputData={setFirstNameInputValue}
+                                containerContentStyle={inputWidthStyle}
+                            />
 
-                        <CustomDataInput
-                            heading='Last Name (Optional)'
-                            infoType='last_name'
-                            inputData={lastNameInputValue}
-                            setInputData={setLastNameInputValue}
-                        />
+                            <FormField
+                                fieldType={FieldType.TEXT}
+                                heading='Last Name (Optional)'
+                                inputData={lastNameInputValue}
+                                setInputData={setLastNameInputValue}
+                                containerContentStyle={inputWidthStyle}
+                            />
+                        </View>
 
-                        <CustomDataInput
+                        <FormField
+                            fieldType={FieldType.TEXT}
                             heading='Address'
-                            infoType='address'
                             isMandatory={true}
                             isError={addressErrorPresent}
                             errorSetter={setAddressErrorPresent}
                             errorPrompt="Address field can't be empty"
                             inputData={addressInputValue}
                             setInputData={setAddressInputValue}
+                            internalStyle={styles.addressExtraStyle}
                         />
 
-                        <View style={[width <= WIDTH_THRESHOLD ? styles.portraitContactInfoContainer : styles.landscapeContactInfoContainer]}>
-                            <ContactInput
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
+                            <FormField
+                                fieldType={FieldType.PHONE}
                                 heading='Phone'
                                 isMandatory={true}
                                 isError={contactErrorPresent}
                                 errorSetter={setContactErrorPresent}
                                 errorPrompt="Contact details isn't valid"
-                                contactRef={phoneInputRef}
-                                defaultValue={contactInputValue}
+                                elementRef={phoneInputRef}
+                                contactValue={contactInputValue}
+                                fullyQualifiedContactValue={fullyQualifiedContactValue}
+                                onChangeContactValue={setContactInputValue}
+                                onChangeFullyQualifiedContactValue={setFullyQualifiedContactValue}
                                 defaultCode='IN'
-                                contactCodeValue={contactCodeValue}
-                                textChangeHandler={setContactInputValue}
-                                textChangeFormattedHandler={setContactCodeValue}
-                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%'}}
+                                containerContentStyle={inputWidthStyle}
+                                placeholderTextColor='gray'
+                                selectionColor='gray'
                             />
 
-                            <CustomDataInput
+                            <FormField
+                                fieldType={FieldType.EMAIL}
                                 heading='Email'
-                                infoType='email'
-                                inputType='email-address'
                                 isMandatory={true}
                                 isError={emailErrorPresent}
                                 errorSetter={setEmailErrorPresent}
                                 errorPrompt='Entered email is invalid'
                                 inputData={emailInputValue}
                                 setInputData={setEmailInputValue}
-                                containerStyle={width > WIDTH_THRESHOLD && { width: '49%' }}
+                                containerContentStyle={inputWidthStyle}
                             />
                         </View>
-                        
- 
-                        <CustomDatePicker
-                            selectedDate={selectedDate}
-                            isError={isDobGreaterThanCurrent}
-                            errorPrompt="Date of birth can't be more than today"
-                            datePickerHandler={showDatePickerHandler}
-                            pickerVisible={isDatePickerVisible}
-                            confirmHandler={handleSelectedDate}
-                            cancelHandler={handleDatePickCancel}
+
+                        <View style={isMobileLayout ? 
+                            styles.mobilePortraitContainer : 
+                            styles.tabletOrientationContainer}
+                        >
+                            <FormField
+                                fieldType={FieldType.DATE}
+                                heading='DOB'
+                                isMandatory={true}
+                                isError={isDateErrorPresent}
+                                errorSetter={setIsDateErrorPresent}
+                                errorPrompt="Please select date"
+                                dateValue={selectedDate}
+                                disableFurtherDates={true}
+                                pickerModalVisible={isDatePickerVisible}
+                                datePickerButtonHandler={showDatePickerHandler}
+                                onConfirmSelection={handleSelectedDate}
+                                onCancelSelection={handleDatePickCancel}
+                                containerContentStyle={inputWidthStyle}
+                                buttonStyle={{backgroundColor: '#1778F2'}}
+                                buttonText='Pick Date'
+                            />
+
+                            <FormField
+                                fieldType={FieldType.SELECTION}
+                                heading='State'
+                                listData={STATE_DATA}
+                                isMandatory={true}
+                                isError={isStateSelectorError}
+                                errorSetter={setIsStateSelectorError}
+                                errorPrompt='Select a valid state'
+                                inputSelection={selectedState}
+                                setInputSelection={setSelectedState}
+                                searchEnabled={true}
+                                containerContentStyle={inputWidthStyle}
+                                placeholder='Select State'
+                                searchPlaceholder='Search State...'
+                            />
+                        </View>
+
+                        <FormField
+                            fieldType={FieldType.RADIO}
+                            heading='Select Gender'
+                            isMandatory={true}
+                            isError={genderErrorPresent}
+                            errorPrompt='Please select one gender'
+                            errorSetter={setGenderErrorPresent}
+                            selectorData={GENDER_SELECTOR_OPTIONS}
+                            radioValue={selectedGender}
+                            setRadioValue={setSelectedGender}
+                            isSelectorHorizontal={!isPortrait}
+                            radioBorderColor='#999'
+                            selectionColor='#1778F2'
                         />
 
-                        <StateSelector
-                            heading='State'
-                            listData={STATE_DATA}
-                            isMandatory={true}
-                            isError={isStateSelectorError}
-                            errorSetter={setIsStateSelectorError}
-                            errorPrompt='Select a valid state'
-                            inputState={selectedState}
-                            setInputState={setSelectedState} />
-
-                        <RadioSelector
-                            heading='Select Gender'
-                            selectorData={GENDER_SELECTOR_OPTIONS}
-                            selected={selectedGender}
-                            setSelected={setSelectedGender}
-                            isPortrait={isPortrait}
-                            errorPrompt='Please select one gender'/>
-
-                        <View style={styles.marginEffect}></View>
-                            
-                        <TouchableOpacity
-                            disabled={isSignUpButtonDisabled}
-                            activeOpacity={0.5}
-                            style={[styles.signUpButton, isSignUpButtonDisabled ? styles.disabledButton : styles.enabledButton]}
-                            onPress={() => {
-                                Keyboard.dismiss();
-                                navigateBasicInfoScreen();
-                            }}
-                        >
-                            <Text style={styles.signUpText}>Sign Up</Text>
-                        </TouchableOpacity>
+                        <CustomButton
+                            isDisabled={isSignUpButtonDisabled}
+                            buttonText='Sign Up'
+                            pressHandler={navigateBasicInfoScreen}
+                            buttonStyle={styles.signUpButton}
+                            enableStyle={styles.enabledButton}
+                            disableStyle={styles.disabledButton}
+                            textStyle={styles.signUpText}
+                            extraStyle={{marginTop: 2}}/>
                     </View>
                 </KeyboardAwareScrollView>
             </SafeAreaView>
@@ -275,13 +317,13 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 20
     },
-    portraitContactInfoContainer: {
+    mobilePortraitContainer: {
         flexDirection: 'column',
     },
-    landscapeContactInfoContainer: {
+    tabletOrientationContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     dropdown: {
         borderWidth: 1,
@@ -303,6 +345,10 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     stateSearchInput: {
+    },
+    addressExtraStyle: {
+        height: 98,
+        textAlignVertical: 'top'
     }
 });
 
