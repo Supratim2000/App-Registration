@@ -28,3 +28,5 @@ const formattedDate = getFormatedDateLocalTimeZone(date);
 export const isMobilePortrait = (deviceType: string, isPortrait: boolean): boolean => {
     return deviceType === 'mobile' && isPortrait;
 }
+
+export const formatEuPrice = (value: number) => value.toFixed(2).replace('.00', ',-').replace('.', ',');

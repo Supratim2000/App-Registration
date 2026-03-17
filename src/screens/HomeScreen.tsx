@@ -8,6 +8,7 @@ import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer
 import { CampaignCardProps } from '../utils/ProjectTypes';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CarouselSlider from '../components/CarouselSlider';
+import CartItem from '../components/CartItem';
 
 type Props = BottomTabScreenProps<AppBottomTabParamList, 'Home'>;
 

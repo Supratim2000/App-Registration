@@ -132,3 +132,19 @@ export type FormFieldProps =
   | DateFieldProps
   | RadioFieldProps
   | SelectionFieldProps;
+
+  export type CartItemType = {
+    itemName?: string;
+    imageUrl?: string;
+    stkValue: number;
+    stkLocation?: string;
+    offerQuantity?: number;
+    offerPrice?: number;
+    stkPrice: number;
+  }
+  
+  export type CartItemProps = CartItemType & {
+    onAddPress?: (data: CartItemType) => void;
+    onSavePress?: (data: CartItemType) => void;
+    containerStyle: StyleProp<ViewStyle>
+  }

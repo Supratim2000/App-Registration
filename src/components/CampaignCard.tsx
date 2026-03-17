@@ -20,7 +20,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ id, image, heading, descrip
 
 const styles = StyleSheet.create({
   card: {
-    width: 400,
+    width: 260,
     backgroundColor: "#fff",
     borderRadius: 10,
     marginHorizontal: 8,

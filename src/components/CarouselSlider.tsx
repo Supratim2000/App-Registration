@@ -62,7 +62,6 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                             <TouchableOpacity
                                 activeOpacity={0.9}
                                 onPress={() => onItemPress?.(info.item, info.index)}
-                                style={{ backgroundColor: '#bb2a2a'}}
                                 onLayout={(event) => {
                                         const { width, height, x, y } = event.nativeEvent.layout;
                                         if (snapInterval === 0) {
