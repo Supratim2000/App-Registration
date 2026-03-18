@@ -3,6 +3,7 @@ import { CartItemProps } from '../utils/ProjectTypes';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { formatEuPrice } from '../utils/ProjectUtils';
+import IconButton from './IconButton';
 
 const CartItem: React.FC<CartItemProps> = ({ itemName, imageUrl, stkValue, stkLocation, offerQuantity, offerPrice, stkPrice, onAddPress, onSavePress, containerStyle }): React.JSX.Element => {
     const imageNotFoundFallback = require('../assets/images/image_not_found.png');
@@ -40,27 +41,33 @@ const CartItem: React.FC<CartItemProps> = ({ itemName, imageUrl, stkValue, stkLo
                     style={styles.itemImage}
                 />
                 <View style={styles.itemInfoContainer}>
-                    <Text style={styles.itemNameStyle}>{itemName ?? '...'}</Text>
-                    <View style={styles.itemInfoInternalContainer}>
-                        <View style={styles.stkContainerStyle}>
-                            <Text style={styles.stkTextStyle}>{stkValue} stk</Text>
-                            { stkLocation && <Text style={styles.stkTextStyle}>|</Text> }
-                            { stkLocation && <Text style={styles.stkTextStyle}>{stkLocation}</Text> }
+                    <View style={styles.itemTextAndClickableButtonContainer}>
+                        <View style={styles.itemNameContainer}>
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.itemNameStyle}>{itemName ?? '...'}</Text>
                         </View>
-                        { (offerQuantity && offerPrice) && <View style={styles.offerContainer}>
-                            <Text style={styles.offerText}>Mix {offerQuantity} for {formatEuPrice(offerPrice)}</Text>
-                        </View> }
+                        <View style={styles.buttonContainer}>
+                            <IconButton
+                                isVisible={onAddPress !== undefined}
+                                onIconPress={() => onAddPress?.(currentCartItemData)}
+                                currentCartData={currentCartItemData}
+                                iconName='add-circle-outline'
+                            />
+                            <IconButton
+                                isVisible={onSavePress !== undefined}
+                                onIconPress={() => onSavePress?.(currentCartItemData)}
+                                currentCartData={currentCartItemData}
+                                iconName='bookmark-border'
+                            />
+                        </View>
                     </View>
-                </View>
-                <View style={styles.buttonMasterContainer}>
-                    <View style={styles.buttonContainer}>
-                         { onAddPress && <TouchableOpacity onPress={() => onAddPress?.(currentCartItemData)}>
-                            <Icon name="add-circle-outline" size={28} color="#000" />
-                        </TouchableOpacity> }
-                        { onSavePress && <TouchableOpacity onPress={() => onSavePress?.(currentCartItemData)}>
-                            <Icon name="bookmark-border" size={28} color="#000" />
-                        </TouchableOpacity> }
+                    <View style={styles.stkContainerStyle}>
+                        <Text style={styles.stkTextStyle}>{stkValue} stk</Text>
+                        { stkLocation && <Text style={styles.stkTextStyle}>|</Text> }
+                        { stkLocation && <Text style={styles.stkTextStyle}>{stkLocation}</Text> }
                     </View>
+                    { (offerQuantity && offerPrice) && <View style={styles.offerContainer}>
+                        <Text style={styles.offerText}>Mix {offerQuantity} for {formatEuPrice(offerPrice)}</Text>
+                    </View> }
                 </View>
             </View>
             <View style={styles.itemPriceContainer}>
@@ -88,11 +95,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         borderRadius: 14,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        paddingHorizontal: 14
     },
     itemDescriptionContainer: {
         flexDirection: 'row',
-        alignItems: 'stretch',
+        alignItems: 'stretch'
     },
     itemImage: {
         width: 75,
@@ -104,7 +112,7 @@ const styles = StyleSheet.create({
     itemPriceContainer: {
         flexDirection: 'row',
         marginLeft: 75,
-        marginTop: 4,
+        marginVertical: 6
     },
     itemInfoContainer: {
         flexDirection: 'column',
@@ -113,20 +121,21 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         marginVertical: 2
     },
-    buttonMasterContainer: {
-        
-    },
     buttonContainer: {
         flexDirection: 'row',
-        marginRight: 12,
         marginVertical: 4
+    },
+    itemNameContainer: {
+        flex: 1,
+        marginRight: 12
     },
     itemNameStyle: {
         fontWeight: 500,
-        fontSize: 22
+        fontSize: 24
     },
     stkContainerStyle: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignSelf: 'flex-start'
     },
     stkTextStyle: {
         marginRight: 2,
@@ -134,10 +143,12 @@ const styles = StyleSheet.create({
     },
     offerContainer: {
         backgroundColor: '#f5d800',
+        paddingHorizontal: 8,
         paddingVertical: 6,
         borderRadius: 8,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        alignSelf: 'flex-start'
     },
     offerText: {
         textDecorationLine: 'underline',
@@ -148,33 +159,35 @@ const styles = StyleSheet.create({
     },
     priceContainer: {
         marginLeft: 8,
-        flex: 1
+        flex: 1,
     },
     stkStyle: {
         color: '#6e6e6e',
         fontSize: 16,
     },
     stkPriceContainer: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'flex-start'
     },
     payableContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
     pennyStyle: {
-        fontSize: 34,
+        fontSize: 32,
+        lineHeight: 32,
         fontWeight: 900,
-        color: '#000000',
+        color: '#000000'
     },
     scentStyle: {
-        fontSize: 22,
+        fontSize: 20,
+        lineHeight: 20,
         fontWeight: 900,
-        color: '#000000',
+        color: '#000000'
     },
     quantityContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 12,
     },
     quantityValueContainer: {
         minWidth: 58,
@@ -189,6 +202,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#FFFFFF'
+    },
+    itemTextAndClickableButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     }
 });
 

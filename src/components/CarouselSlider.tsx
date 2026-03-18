@@ -4,40 +4,59 @@ import { CarouselSliderProps } from '../utils/ProjectTypes';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { unstable_hasStaticViewConfig } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
-const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPress } : CarouselSliderProps<T>): React.JSX.Element => {
+const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPress, containerStyle } : CarouselSliderProps<T>): React.JSX.Element => {
     const flatListRef = useRef<FlatList<T>>(null);
     const scrollOffset = useRef<number>(0);
     const contentTotalWidth = useRef<number>(0);
     const visibleLayoutWidth = useRef<number>(0);
+    const leftArrowOpacity = useRef<Animated.Value>(new Animated.Value(0)).current;
+    const rightArrowOpacity = useRef<Animated.Value>(new Animated.Value(1)).current;
+    
     const [snapInterval, setSnapInterval] = useState<number>(0);
     let [arrowVisibility, setArrowVisibility] = useState<any>({
         left: false,
         right: true
     });
-    const leftArrowOpacity = useRef(new Animated.Value(0)).current;
-    const rightArrowOpacity = useRef(new Animated.Value(1)).current;
 
-    const scrollRight = () => {
+    const scrollRight = (): void => {
         const maxOffset = contentTotalWidth.current - visibleLayoutWidth.current;
         scrollOffset.current = Math.min(scrollOffset.current + snapInterval, maxOffset);
 
         flatListRef.current?.scrollToOffset({
-        offset: scrollOffset.current,
-        animated: true
+            offset: scrollOffset.current,
+            animated: true
         });
     }
 
-    const scrollLeft = () => {
-      scrollOffset.current = Math.max(scrollOffset.current - snapInterval, 0);
+    const scrollLeft = (): void => {
+        scrollOffset.current = Math.max(scrollOffset.current - snapInterval, 0);
 
-      flatListRef.current?.scrollToOffset({
-        offset: scrollOffset.current,
-        animated: true
-      });
+        flatListRef.current?.scrollToOffset({
+            offset: scrollOffset.current,
+            animated: true
+        });
+    }
+
+    const maintainSlidingArrowVisibility = (isLeftArrowVisible: boolean, isRightArrowVisible: boolean): void => {
+        Animated.timing(leftArrowOpacity, {
+            toValue: isLeftArrowVisible ? 1 : 0,
+            duration: 100,
+            useNativeDriver: true
+        }).start();
+                    
+        Animated.timing(rightArrowOpacity, {
+            toValue: isRightArrowVisible ? 1 : 0,
+            duration: 100,
+            useNativeDriver: true
+        }).start();
+                    
+        setArrowVisibility((prev: any) => {
+            return ((prev.left === isLeftArrowVisible && prev.right === isRightArrowVisible) ? prev : { left: isLeftArrowVisible, right: isRightArrowVisible });
+        });
     }
 
     return (
-        <>
+        <View style={[styles.masterContainer, containerStyle]}>
             { heading && <Text style={styles.heading}>{heading}</Text> }
             <View style={styles.container}>
                 <Animated.View 
@@ -54,7 +73,7 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                     horizontal
                     keyExtractor={keyExtractor}
                     showsHorizontalScrollIndicator={false}
-                    snapToInterval={snapInterval || undefined}
+                    snapToInterval={snapInterval}
                     decelerationRate="fast"
                     scrollEventThrottle={16}
                     renderItem={(info) => {
@@ -65,7 +84,8 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                                 onLayout={(event) => {
                                         const { width, height, x, y } = event.nativeEvent.layout;
                                         if (snapInterval === 0) {
-                                            setSnapInterval(width + 2 * x);
+                                            const snappingDistance = width + 2 * x;
+                                            setSnapInterval(snappingDistance);
                                         }
                                     }}
                             >
@@ -82,38 +102,12 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                     onScroll={(event) => {
                         const offset = event.nativeEvent.contentOffset.x;
                         scrollOffset.current = offset;
-
-                        console.log(scrollOffset.current);
                     }}
                     onMomentumScrollEnd = {(event) => {
-                        const offset = event.nativeEvent.contentOffset.x;
-                        const contentWidth = event.nativeEvent.contentSize.width;
-                        const layoutWidth = event.nativeEvent.layoutMeasurement.width;
-                    
-                        const maxOffset = contentWidth - layoutWidth;
-                    
-                        const isLeftArrowVisible = offset > 3;
-                        const isRightArrowVisible = offset < maxOffset - 3;
-                    
-                        Animated.timing(leftArrowOpacity, {
-                            toValue: isLeftArrowVisible ? 1 : 0,
-                            duration: 100,
-                            useNativeDriver: true
-                        }).start();
-                    
-                        Animated.timing(rightArrowOpacity, {
-                            toValue: isRightArrowVisible ? 1 : 0,
-                            duration: 100,
-                            useNativeDriver: true
-                        }).start();
-                    
-                        setArrowVisibility((prev: any) => {
-                            if (prev.left === isLeftArrowVisible && prev.right === isRightArrowVisible) {return prev;}
-                            return {
-                                left: isLeftArrowVisible,
-                                right: isRightArrowVisible
-                            };
-                        });
+                        const maxOffset = contentTotalWidth.current - visibleLayoutWidth.current;
+                        const isLeftArrowVisible = scrollOffset.current > 3;
+                        const isRightArrowVisible = scrollOffset.current < maxOffset - 3;
+                        maintainSlidingArrowVisibility(isLeftArrowVisible, isRightArrowVisible);
                 }}/>
                 <Animated.View
                     style={[styles.arrowButton, styles.arrowRight, {opacity : rightArrowOpacity}]}
@@ -124,11 +118,12 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                     </TouchableOpacity>
                 </Animated.View>
             </View>
-        </>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    masterContainer: {},
     container: {
         position: "relative"
     },

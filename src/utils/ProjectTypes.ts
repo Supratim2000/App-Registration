@@ -42,11 +42,12 @@ export type CampaignCardProps = {
 }
 
 export type CarouselSliderProps<T> = {
-  heading?: string,
+  heading?: string;
   data: T[];
   renderItem: ListRenderItem<T>;
   keyExtractor: (item: T, index: number) => string;
   onItemPress?: (item: T, index: number) => void;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 export type CustomButtonProp = {
@@ -58,7 +59,7 @@ export type CustomButtonProp = {
   enableStyle?: StyleProp<ViewStyle>;
   disableStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  extraStyle?: StyleProp<ViewStyle>
+  extraStyle?: StyleProp<ViewStyle>;
 }
 
 type BaseFieldProps = {
@@ -133,18 +134,27 @@ export type FormFieldProps =
   | RadioFieldProps
   | SelectionFieldProps;
 
-  export type CartItemType = {
-    itemName?: string;
-    imageUrl?: string;
-    stkValue: number;
-    stkLocation?: string;
-    offerQuantity?: number;
-    offerPrice?: number;
-    stkPrice: number;
-  }
+export type CartItemType = {
+  itemName?: string;
+  imageUrl?: string;
+  stkValue: number;
+  stkLocation?: string;
+  offerQuantity?: number;
+  offerPrice?: number;
+  stkPrice: number;
+}
   
-  export type CartItemProps = CartItemType & {
-    onAddPress?: (data: CartItemType) => void;
-    onSavePress?: (data: CartItemType) => void;
-    containerStyle: StyleProp<ViewStyle>
-  }
+export type CartItemProps = CartItemType & {
+  onAddPress?: (data: CartItemType) => void;
+  onSavePress?: (data: CartItemType) => void;
+  containerStyle: StyleProp<ViewStyle>
+}
+
+export type IconButtonProps = {
+  isVisible?: boolean,
+  onIconPress?: (data: CartItemType | {}) => void,
+  currentCartData?: CartItemType | {},
+  iconName: string,
+  iconSize?: number,
+  iconColor?: string
+}

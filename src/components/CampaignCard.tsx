@@ -1,20 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CampaignCardProps } from '../utils/ProjectTypes';
 import { Image, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const CampaignCard: React.FC<CampaignCardProps> = ({ id, image, heading, description }): React.JSX.Element => {
-    return (
-        <View style={styles.card}>
-            <Image source={{ uri: image }} style={styles.image} />
-            <Text style={styles.title}>{ heading }</Text>
-            <Text numberOfLines={4} style={styles.description}>{ description }</Text>
-            <View style={styles.touchableArrow}>
-              <TouchableOpacity activeOpacity={1.0} style={styles.touchableOpacityArrowContainer}>
-                  <Icon name="chevron-right" size={32} color="#1778F2" />
-              </TouchableOpacity>
-            </View>
-        </View>
+  const imageNotFoundFallback = require('../assets/images/image_not_found.png');
+  const [imgLocation, setImgLocation] = useState(image ? { uri: image } : imageNotFoundFallback);
+  const [resizeMode, setResizeMode] = useState<'cover' | 'contain'>(image ? 'cover' : 'contain');
+
+  const handleImageLoadingError = () => {
+    setImgLocation(imageNotFoundFallback);
+    setResizeMode('contain');
+  };
+
+  return (
+      <View style={styles.card}>
+          <Image
+            source={imgLocation}
+            onError={handleImageLoadingError}
+            resizeMode={resizeMode}
+            style={styles.image}
+          />
+          <Text numberOfLines={1} style={styles.title}>{ heading ?? '...' }</Text>
+          <Text numberOfLines={4} style={styles.description}>{ description ?? '...' }</Text>
+          <View style={styles.touchableArrow}>
+            <TouchableOpacity activeOpacity={1.0} style={styles.touchableOpacityArrowContainer}>
+                <Icon name="chevron-right" size={36} color="#1778F2" />
+            </TouchableOpacity>
+          </View>
+      </View>
     );
 }
 
@@ -26,7 +40,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     elevation: 3,
     paddingBottom: 10,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'hidden'
   },
   image: {
     width: "100%",
@@ -49,7 +64,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto'
   },
   touchableOpacityArrowContainer: {
-    borderRadius: 10,
+    borderRadius: 36,
     borderWidth: 1 ,
     borderColor:'#1778F2'
   }
