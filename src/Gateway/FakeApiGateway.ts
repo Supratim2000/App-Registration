@@ -75,3 +75,52 @@ export const apiData = {
         },
     ]
 };
+
+export const cartItemData = {
+    data: [
+        {
+            "itemName": "Bananer",
+            "imageUrl": "https://images.unsplash.com/photo-1587132137056-bfbf0166836e",
+            "stkValue": 10,
+            "stkLocation": "Columbia",
+            "offerQuantity": 10,
+            "offerPrice": 24.5,
+            "stkPrice": 2.75
+        },
+        {
+            "itemName": "jordbær",
+            "imageUrl": "https://media.istockphoto.com/id/478352254/photo/strawberry-isolated-against-a-white-background.jpg?s=1024x1024&w=is&k=20&c=Arb4FONj6lgESBfw7llkWEPEFg3VK6xU60siYvRBVvQ=",
+            "stkValue": 25,
+            "stkLocation": "Columbia",
+            "offerQuantity": 10,
+            "offerPrice": 25.0,
+            "stkPrice": 5.5
+        },
+        {
+            "itemName": "ananas",
+            "imageUrl": "https://media.istockphoto.com/id/1497639521/photo/ripe-pineapple-is-tropical-fruit-isolated-on-white-background.jpg?s=2048x2048&w=is&k=20&c=9mLIVZcC7RcRlHF6FtqQA67iyTwqZ59fuLXKkggVcl4=",
+            "stkValue": 76,
+            "stkLocation": "Munich",
+            "offerQuantity": 10,
+            "stkPrice": 9.25
+        },
+        {
+            "itemName": "æble",
+            "imageUrl": "https://media.istockphoto.com/id/532048136/photo/fresh-red-apple-isolated-on-white-with-clipping-path.jpg?s=2048x2048&w=is&k=20&c=o5iB_Nz86vATCXObzj-quBI_OV7N1HeknHkqNWIwAH4=",
+            "stkValue": 11,
+            "stkLocation": "Columbia",
+            "offerQuantity": 11,
+            "offerPrice": 40.25,
+            "stkPrice": 4.0
+        },
+        {
+            "itemName": "citron",
+            "imageUrl": "https://images.unsplash.com/flagged/photo-1587302164675-820fe61bbd55?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "stkValue": 17,
+            "stkLocation": "Frankfut",
+            "offerQuantity": 15,
+            "offerPrice": 95.25,
+            "stkPrice": 6.75
+        }
+    ]
+}

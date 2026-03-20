@@ -1,51 +1,33 @@
 import { Animated, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { AppBottomTabParamList } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CampaignCard from '../components/CampaignCard';
-import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 import { CampaignCardProps } from '../utils/ProjectTypes';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import CarouselSlider from '../components/CarouselSlider';
-import CartItem from '../components/CartItem';
-import { apiData } from '../Gateway/FakeApiGatewat';
+import { apiData } from '../Gateway/FakeApiGateway';
 
 type Props = BottomTabScreenProps<AppBottomTabParamList, 'Home'>;
 
 const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element => {
-  const flatListRef = useRef<FlatList<CampaignCardProps>>(null);
-  const scrollOffset = useRef<number>(0);
-  const contentTotalWidth = useRef<number>(0);
-  const visibleLayoutWidth = useRef<number>(0);
-  let [arrowVisibility, setArrowVisibility] = useState<any>({
-    left: false,
-    right: true
-  });
-  const leftArrowOpacity = useRef(new Animated.Value(0)).current;
-  const rightArrowOpacity = useRef(new Animated.Value(1)).current;
+  const carouselSliderItemClickHandler = useCallback((item: CampaignCardProps, index: number): void => {
+    console.log(index);
+    console.log(item);
+  }, []);
 
-  const CARD_WIDTH = 260;
-  const CARD_MARGIN_WIDTH = 16;
+  const renderCampaignItem = useCallback(({ item }: { item: CampaignCardProps }): React.JSX.Element => {
+    return (
+      <CampaignCard
+        id={item.id}
+        image={item.image}
+        heading={item.heading}
+        description={item.description}
+      />
+    );
+  },[]);
 
-  const scrollRight = () => {
-    const maxOffset = contentTotalWidth.current - visibleLayoutWidth.current;
-    scrollOffset.current = Math.min(scrollOffset.current + (CARD_WIDTH + CARD_MARGIN_WIDTH), maxOffset);
-
-    flatListRef.current?.scrollToOffset({
-      offset: scrollOffset.current,
-      animated: true
-    });
-  }
-
-  const scrollLeft = () => {
-      scrollOffset.current = Math.max(scrollOffset.current - (CARD_WIDTH + CARD_MARGIN_WIDTH), 0);
-
-      flatListRef.current?.scrollToOffset({
-        offset: scrollOffset.current,
-        animated: true
-      });
-  }
+  const keyExtractor = useCallback((item: CampaignCardProps) => item.id, []);
 
   return (
   <SafeAreaView style={{ flex: 1 }} edges={['top' , 'left', 'right']}>
@@ -53,18 +35,9 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element =
         <CarouselSlider<CampaignCardProps>
           heading="Popular Campaigns"
           data={apiData.data}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <CampaignCard
-              id={item.id}
-              image={item.image}
-              heading={item.heading}
-              description={item.description}
-            />
-          )}
-          onItemPress={(item) => {
-            console.log('Clicked campaign:', item.heading);
-          }}
+          keyExtractor={keyExtractor}
+          renderItem={renderCampaignItem}
+          onItemPress={carouselSliderItemClickHandler}
         />
       </ScrollView>
     </SafeAreaView>

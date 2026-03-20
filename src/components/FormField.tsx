@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
 import { FormFieldProps, SelectorType } from '../utils/ProjectTypes';
 import { FieldType, RadioValue } from '../utils/ProjectConstants';
@@ -8,7 +7,6 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CustomButton from './CustomButton';
 import { Dropdown } from 'react-native-element-dropdown';
 import { RadioButton } from 'react-native-paper';
-import { Consumer } from 'react-native-paper/lib/typescript/core/settings';
 
 const FormField: React.FC<FormFieldProps> = (props): React.JSX.Element => {
     const { 

@@ -1,10 +1,10 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CarouselSliderProps } from '../utils/ProjectTypes';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { unstable_hasStaticViewConfig } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+import { ListRenderItemInfo } from 'react-native';
 
-const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPress, containerStyle } : CarouselSliderProps<T>): React.JSX.Element => {
+const CarouselSliderComponent = <T, >({ heading, data, renderItem, keyExtractor, onItemPress, containerStyle } : CarouselSliderProps<T>): React.JSX.Element => {
     const flatListRef = useRef<FlatList<T>>(null);
     const scrollOffset = useRef<number>(0);
     const contentTotalWidth = useRef<number>(0);
@@ -18,7 +18,25 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
         right: true
     });
 
-    const scrollRight = (): void => {
+    const renderFlatListItem = useCallback((info: ListRenderItemInfo<T>): React.JSX.Element => {
+        return (
+            <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => onItemPress?.(info.item, info.index)}
+                onLayout={(event) => {
+                    const { width, x } = event.nativeEvent.layout;
+                    if (snapInterval === 0) {
+                        const snappingDistance = width + 2 * x;
+                        setSnapInterval(snappingDistance);
+                    }
+                }}
+            >
+                {renderItem(info)}
+            </TouchableOpacity>
+        );
+    },[onItemPress, renderItem, snapInterval]);
+
+    const scrollRight = useCallback((): void => {
         const maxOffset = contentTotalWidth.current - visibleLayoutWidth.current;
         scrollOffset.current = Math.min(scrollOffset.current + snapInterval, maxOffset);
 
@@ -26,16 +44,16 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
             offset: scrollOffset.current,
             animated: true
         });
-    }
+    }, [snapInterval]);
 
-    const scrollLeft = (): void => {
+    const scrollLeft = useCallback((): void => {
         scrollOffset.current = Math.max(scrollOffset.current - snapInterval, 0);
 
         flatListRef.current?.scrollToOffset({
             offset: scrollOffset.current,
             animated: true
         });
-    }
+    }, [snapInterval]);
 
     const maintainSlidingArrowVisibility = (isLeftArrowVisible: boolean, isRightArrowVisible: boolean): void => {
         Animated.timing(leftArrowOpacity, {
@@ -76,23 +94,7 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
                     snapToInterval={snapInterval}
                     decelerationRate="fast"
                     scrollEventThrottle={16}
-                    renderItem={(info) => {
-                        return (
-                            <TouchableOpacity
-                                activeOpacity={0.9}
-                                onPress={() => onItemPress?.(info.item, info.index)}
-                                onLayout={(event) => {
-                                        const { width, height, x, y } = event.nativeEvent.layout;
-                                        if (snapInterval === 0) {
-                                            const snappingDistance = width + 2 * x;
-                                            setSnapInterval(snappingDistance);
-                                        }
-                                    }}
-                            >
-                                {renderItem(info)}
-                            </TouchableOpacity>
-                        )
-                    }}
+                    renderItem={renderFlatListItem}
                     onLayout={(event) => {
                         visibleLayoutWidth.current = event.nativeEvent.layout.width;
                     }}
@@ -121,6 +123,8 @@ const CarouselSlider = <T, >({ heading, data, renderItem, keyExtractor, onItemPr
         </View>
     );
 }
+
+const CarouselSlider = React.memo(CarouselSliderComponent) as typeof CarouselSliderComponent;
 
 const styles = StyleSheet.create({
     masterContainer: {},

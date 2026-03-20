@@ -5,14 +5,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { formatEuPrice } from '../utils/ProjectUtils';
 import IconButton from './IconButton';
 
-const CartItem: React.FC<CartItemProps> = ({ itemName, imageUrl, stkValue, stkLocation, offerQuantity, offerPrice, stkPrice, onAddPress, onSavePress, containerStyle }): React.JSX.Element => {
+const CartItem: React.FC<CartItemProps> = React.memo(({ itemName, imageUrl, stkValue, stkLocation, offerQuantity, offerPrice, stkPrice, onAddPress, onSavePress, containerStyle }): React.JSX.Element => {
     const imageNotFoundFallback = require('../assets/images/image_not_found.png');
     
     const [imgLocation, setImgLocation] = useState(imageUrl ? { uri: imageUrl } : imageNotFoundFallback);
     const [totalPrice, setTotalPrice] = useState<number>(0.00);
     const [penny, scent] = formatEuPrice(totalPrice).split(',');
 
-    const currentCartItemData = React.useMemo(() => ({
+    const currentCartItemData = {
         itemName,
         imageUrl,
         stkValue,
@@ -20,7 +20,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemName, imageUrl, stkValue, stkLo
         offerQuantity,
         offerPrice,
         stkPrice
-    }), [itemName, imageUrl, stkValue, stkLocation, offerQuantity, offerPrice, stkPrice]);
+    };
 
     useEffect(() => {
         const generalPrice = stkValue * stkPrice;
@@ -88,7 +88,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemName, imageUrl, stkValue, stkLo
             </View>
         </View>
     );
-}
+});
 
 const styles = StyleSheet.create({
     cartContainer: {
