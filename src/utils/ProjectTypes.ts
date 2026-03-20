@@ -1,341 +1,160 @@
 import { Dispatch, SetStateAction } from "react"
-import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native"
+import { KeyboardTypeOptions, ListRenderItem, StyleProp, ViewStyle } from "react-native"
 import PhoneInput from "react-native-phone-number-input"
+import { TextStyle } from "react-native"
+import { FieldType, RadioValue } from "./ProjectConstants"
 
 export type CheckDateGreaterThanTodayReturnType = {
-  isGreater: boolean,
+  isGreater: boolean;
   formattedDate: string
 }
 
 export type HeadingProp = {
-    isPortrait: boolean,
+    isPortrait: boolean;
     headingMessage: string
 }
 
-export type InputProps = {
-    heading: string,
-    inputType?: KeyboardTypeOptions,
-    infoType: string
-    isMandatory?: boolean,
-    isError?: boolean,
-    errorSetter?: Dispatch<SetStateAction<boolean>>,
-    errorPrompt?: string,
-    inputData: string,
-    setInputData: Dispatch<SetStateAction<string>>,
-    containerStyle?: StyleProp<ViewStyle>
-}
-
 export type StateObjectType = {
-    label: string,
+    label: string;
     value: string
-}
-
-export type StateSelectorProps = {
-    heading: string,
-    listData: StateObjectType[],
-    isMandatory?: boolean,
-    isError?: boolean,
-    errorSetter?: Dispatch<SetStateAction<boolean>>,
-    errorPrompt?: string,
-    inputState: string | null,
-    setInputState: Dispatch<SetStateAction<string | null>>
 }
 
 export type DataProps = {
-    heading: string,
+    heading: string;
     content: string
 }
 
-export type DateProps = {
-    selectedDate: string,
-    isError: boolean,
-    errorPrompt: string
-    datePickerHandler: () => void,
-    pickerVisible: boolean,
-    confirmHandler: (date: Date) => void,
-    cancelHandler: () => void
-}
-
 export type SelectorType = {
-    key: string,
+    key: string;
+    value: RadioValue
+}
+
+export type SelectionType = {
+    label: string;
     value: string
 }
 
-export type StateType = {
-    label: string,
-    value: string
+export type CampaignCardProps = {
+  id: string,
+  image?: string,
+  heading?: string,
+  description?: string
 }
 
-export type GenderSelectorProp = {
-    heading: string,
-    selectorData: SelectorType[],
-    selected: string | null,
-    setSelected: Dispatch<SetStateAction<string | null>>,
-    isPortrait: boolean,
-    errorPrompt: string
+export type CarouselSliderProps<T> = {
+  heading?: string;
+  data: T[];
+  renderItem: ListRenderItem<T>;
+  keyExtractor: (item: T, index: number) => string;
+  onItemPress?: (item: T, index: number) => void;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
-export type ContactProps = {
-    heading: string,
-    isMandatory?: boolean,
-    isError?: boolean,
-    errorSetter?: Dispatch<SetStateAction<boolean>>,
-    errorPrompt?: string,
-    contactRef: React.RefObject<PhoneInput | null>,
-    defaultValue: string,
-    defaultCode: | "AF"
-    | "AL"
-    | "DZ"
-    | "AS"
-    | "AD"
-    | "AO"
-    | "AI"
-    | "AQ"
-    | "AG"
-    | "AR"
-    | "AM"
-    | "AW"
-    | "AU"
-    | "AT"
-    | "AZ"
-    | "BS"
-    | "BH"
-    | "BD"
-    | "BB"
-    | "BY"
-    | "BE"
-    | "BZ"
-    | "BJ"
-    | "BM"
-    | "BT"
-    | "BO"
-    | "BA"
-    | "BW"
-    | "BV"
-    | "BR"
-    | "IO"
-    | "VG"
-    | "BN"
-    | "BG"
-    | "BF"
-    | "BI"
-    | "KH"
-    | "CM"
-    | "CA"
-    | "CV"
-    | "BQ"
-    | "KY"
-    | "CF"
-    | "TD"
-    | "CL"
-    | "CN"
-    | "CX"
-    | "CC"
-    | "CO"
-    | "KM"
-    | "CK"
-    | "CR"
-    | "HR"
-    | "CU"
-    | "CW"
-    | "CY"
-    | "CZ"
-    | "CD"
-    | "DK"
-    | "DJ"
-    | "DM"
-    | "DO"
-    | "EC"
-    | "EG"
-    | "SV"
-    | "GQ"
-    | "ER"
-    | "EE"
-    | "SZ"
-    | "ET"
-    | "FK"
-    | "FO"
-    | "FJ"
-    | "FI"
-    | "FR"
-    | "GF"
-    | "PF"
-    | "TF"
-    | "GA"
-    | "GM"
-    | "GE"
-    | "DE"
-    | "GH"
-    | "GI"
-    | "GR"
-    | "GL"
-    | "GD"
-    | "GP"
-    | "GU"
-    | "GT"
-    | "GG"
-    | "GN"
-    | "GW"
-    | "GY"
-    | "HT"
-    | "HM"
-    | "HN"
-    | "HU"
-    | "IS"
-    | "IN"
-    | "ID"
-    | "IR"
-    | "IQ"
-    | "IE"
-    | "IM"
-    | "IL"
-    | "IT"
-    | "CI"
-    | "JM"
-    | "JP"
-    | "JE"
-    | "JO"
-    | "KZ"
-    | "KE"
-    | "XK"
-    | "KW"
-    | "KG"
-    | "LA"
-    | "LV"
-    | "LB"
-    | "LS"
-    | "LR"
-    | "LY"
-    | "LI"
-    | "LT"
-    | "LU"
-    | "MO"
-    | "MK"
-    | "MG"
-    | "MW"
-    | "MY"
-    | "MV"
-    | "ML"
-    | "MT"
-    | "MH"
-    | "MQ"
-    | "MR"
-    | "MU"
-    | "YT"
-    | "MX"
-    | "FM"
-    | "MD"
-    | "MC"
-    | "MN"
-    | "ME"
-    | "MS"
-    | "MA"
-    | "MZ"
-    | "MM"
-    | "NA"
-    | "NR"
-    | "NP"
-    | "NL"
-    | "NC"
-    | "NZ"
-    | "NI"
-    | "NE"
-    | "NG"
-    | "NU"
-    | "NF"
-    | "KP"
-    | "MP"
-    | "NO"
-    | "OM"
-    | "PK"
-    | "PW"
-    | "PS"
-    | "PA"
-    | "PG"
-    | "PY"
-    | "PE"
-    | "PH"
-    | "PN"
-    | "PL"
-    | "PT"
-    | "PR"
-    | "QA"
-    | "CG"
-    | "RO"
-    | "RU"
-    | "RW"
-    | "RE"
-    | "BL"
-    | "SH"
-    | "KN"
-    | "LC"
-    | "MF"
-    | "PM"
-    | "VC"
-    | "WS"
-    | "SM"
-    | "SA"
-    | "SN"
-    | "RS"
-    | "SC"
-    | "SL"
-    | "SG"
-    | "SX"
-    | "SK"
-    | "SI"
-    | "SB"
-    | "SO"
-    | "ZA"
-    | "GS"
-    | "KR"
-    | "SS"
-    | "ES"
-    | "LK"
-    | "SD"
-    | "SR"
-    | "SJ"
-    | "SE"
-    | "CH"
-    | "SY"
-    | "ST"
-    | "TW"
-    | "TJ"
-    | "TZ"
-    | "TH"
-    | "TL"
-    | "TG"
-    | "TK"
-    | "TO"
-    | "TT"
-    | "TN"
-    | "TR"
-    | "TM"
-    | "TC"
-    | "TV"
-    | "UG"
-    | "UA"
-    | "AE"
-    | "GB"
-    | "US"
-    | "UM"
-    | "VI"
-    | "UY"
-    | "UZ"
-    | "VU"
-    | "VA"
-    | "VE"
-    | "VN"
-    | "WF"
-    | "EH"
-    | "YE"
-    | "ZM"
-    | "ZW"
-    | "KI"
-    | "HK"
-    | "AX",
-    contactCodeValue: string,
-    textChangeHandler: Dispatch<SetStateAction<string>>,
-    textChangeFormattedHandler: Dispatch<SetStateAction<string>>,
-    autoFocus?: boolean,
-    containerStyle?: StyleProp<ViewStyle>
+export type CustomButtonProp = {
+  isDisabled?: boolean;
+  showLoadingIndicator?: boolean;
+  buttonText: string;
+  pressHandler: () => void;
+  buttonStyle?: StyleProp<ViewStyle>;
+  enableStyle?: StyleProp<ViewStyle>;
+  disableStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  extraStyle?: StyleProp<ViewStyle>;
+}
+
+type BaseFieldProps = {
+  heading: string;
+  isMandatory?: boolean;
+  isError?: boolean;
+  errorPrompt?: string;
+  errorSetter?: Dispatch<SetStateAction<boolean>>;
+  containerContentStyle?: StyleProp<ViewStyle>;
+  internalStyle?: StyleProp<ViewStyle | TextStyle>;
+};
+
+type TextFieldProps = BaseFieldProps & {
+  fieldType: FieldType.TEXT | FieldType.EMAIL;
+  inputData: string;
+  setInputData: Dispatch<SetStateAction<string>>,
+  specialCharacterCheck?: boolean
+};
+
+type PhoneFieldProps = BaseFieldProps & {
+  fieldType: FieldType.PHONE;
+  elementRef: React.RefObject<PhoneInput | null>;
+  contactValue: string;
+  fullyQualifiedContactValue: string,
+  onChangeContactValue: Dispatch<SetStateAction<string>>;
+  onChangeFullyQualifiedContactValue: Dispatch<SetStateAction<string>>;
+  defaultCode?: React.ComponentProps<typeof PhoneInput>["defaultCode"];
+  placeholder?: string,
+  placeholderTextColor?: string,
+  selectionColor?: string
+};
+
+type DateFieldProps = BaseFieldProps & {
+  fieldType: FieldType.DATE;
+  dateValue: string,
+  disableFurtherDates?: boolean,
+  pickerModalVisible: boolean,
+  datePickerButtonHandler: () => void,
+  onConfirmSelection: (date: Date) => void,
+  onCancelSelection: () => void,
+  buttonStyle?: StyleProp<ViewStyle>,
+  viewerStyle?: StyleProp<ViewStyle>
+  buttonText?: string, 
+};
+
+type RadioFieldProps = BaseFieldProps & {
+  fieldType: FieldType.RADIO;
+  selectorData: SelectorType[];
+  radioValue: RadioValue | null;
+  setRadioValue: Dispatch<SetStateAction<RadioValue | null>>;
+  isSelectorHorizontal?: boolean,
+  radioSelectorContainerStyle?: StyleProp<ViewStyle>,
+  fieldSelectorStyle?: StyleProp<ViewStyle>,
+  radioBorderColor?: string,
+  selectionColor?: string
+};
+
+type SelectionFieldProps = BaseFieldProps & {
+  fieldType: FieldType.SELECTION;
+  listData: StateObjectType[];
+  inputSelection: string | null;
+  searchEnabled?: boolean;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  setInputSelection: Dispatch<SetStateAction<string | null>>;
+};
+
+export type FormFieldProps =
+  | TextFieldProps
+  | PhoneFieldProps
+  | DateFieldProps
+  | RadioFieldProps
+  | SelectionFieldProps;
+
+export type CartItemType = {
+  itemName?: string;
+  imageUrl?: string;
+  stkValue: number;
+  stkLocation?: string;
+  offerQuantity?: number;
+  offerPrice?: number;
+  stkPrice: number;
+}
+  
+export type CartItemProps = CartItemType & {
+  onAddPress?: (data: CartItemType) => void;
+  onSavePress?: (data: CartItemType) => void;
+  containerStyle: StyleProp<ViewStyle>
+}
+
+export type IconButtonProps = {
+  isVisible?: boolean,
+  onIconPress?: (data: CartItemType | {}) => void,
+  currentCartData?: CartItemType | {},
+  iconName: string,
+  iconSize?: number,
+  iconColor?: string
 }

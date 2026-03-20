@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { AppBottomTabParamList } from '../navigation/types';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -10,12 +10,13 @@ import UserInfo from '../components/UserInfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
+import CustomButton from '../components/CustomButton';
 
 type Props = BottomTabScreenProps<AppBottomTabParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
-  const { firstName, lastName, address, contact, email, dob, state, gender, loading } = useSelector((state: RootState) => state.registration);
+  const { firstName, lastName, address, contact, email, dob, state, gender, loading, error } = useSelector((state: RootState) => state.registration);
 
   const [ userLoggingOut, setUserLoggingOut] = useState<boolean>(false);
 
@@ -26,15 +27,20 @@ const ProfileScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Elemen
   );
 
   const handleLogout = async () => {
-    setUserLoggingOut(true);
-    await dispatch(clearRegistrationDataFromAsyncStorage());
-
-    navigation.dispatch(
-    CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Registration' }],
-      })
-    );
+    try {
+      setUserLoggingOut(true);
+      await dispatch(clearRegistrationDataFromAsyncStorage()).unwrap();
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Registration' }],
+        })
+      );
+    } catch(error) {
+      Alert.alert('Something Went Wrong, Logout Failed!');
+    } finally {
+      setUserLoggingOut(false);
+    }
   };
 
   return (
@@ -43,26 +49,38 @@ const ProfileScreen: React.FC<Props> = ({ navigation, route }): React.JSX.Elemen
         <View style={styles.headingContainer}>
           <Text style={styles.heading}>Profile Information</Text>
 
-          <TouchableOpacity
-            disabled={userLoggingOut}
-            style={[styles.logoutButton, userLoggingOut && styles.logoutButtonDisabled]}
-            activeOpacity={0.7}
-            onPress={handleLogout}
-          >
-            {!userLoggingOut ? <Text style={styles.logoutText}>Logout</Text> : <ActivityIndicator color="#ffffff"/>}
-          </TouchableOpacity>
+          <CustomButton
+            isDisabled={userLoggingOut}
+            showLoadingIndicator={userLoggingOut}
+            buttonText='Logout'
+            pressHandler={handleLogout}
+            buttonStyle={styles.logoutButton}
+            disableStyle={styles.logoutButtonDisabled}
+            textStyle={styles.logoutText}
+            />
         </View>
 
-        <View style={styles.card}>
-          <UserInfo heading="First Name" value={firstName} />
-          <UserInfo heading="Last Name" value={lastName} />
-          <UserInfo heading="Address" value={address} />
-          <UserInfo heading="Contact" value={contact} />
-          <UserInfo heading="Email" value={email} />
-          <UserInfo heading="Date of Birth" value={dob} />
-          <UserInfo heading="State" value={state} />
-          <UserInfo heading="Gender" value={gender} />
-        </View>
+        {loading ? 
+          <View style={[styles.card, styles.centralLayout]}>
+            <ActivityIndicator size={50} color="#1778F2" />
+          </View>
+          :
+          (error ?
+            <View style={[styles.card, styles.centralLayout]}>
+              <Text style={styles.errorText}>Failed to fetch data!</Text>
+            </View>
+           : 
+            <View style={styles.card}>
+              <UserInfo heading="First Name" value={firstName} />
+              <UserInfo heading="Last Name" value={lastName} />
+              <UserInfo heading="Address" value={address} />
+              <UserInfo heading="Contact" value={contact} />
+              <UserInfo heading="Email" value={email} />
+              <UserInfo heading="Date of Birth" value={dob} />
+              <UserInfo heading="State" value={state} />
+              <UserInfo heading="Gender" value={gender} />
+            </View>)
+        }
       </ScrollView>
     </SafeAreaView>
   );
@@ -109,6 +127,15 @@ const styles = StyleSheet.create({
   },
   logoutButtonDisabled: {
     backgroundColor: '#A0C4FF'
+  },
+  errorText: {
+    fontSize: 20,
+    fontFamily: 'PTSerif-Bold',
+    color: '#ff0000'
+  },
+  centralLayout: {
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
 
